@@ -266,6 +266,7 @@ export default function AdminSettingsPage() {
                 settings.mothersDayEnabled ? "bg-emerald-500" : "bg-white/10"
               }`}
               role="switch"
+              aria-checked={settings.mothersDayEnabled ? "true" : "false"}
               aria-label={`Mother's Day section is ${settings.mothersDayEnabled ? "enabled" : "disabled"}. Click to toggle.`}
             >
               <div

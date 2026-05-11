@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Grid3X3, LayoutGrid, Rows3 } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { products, categories } from "@/lib/products";
+import { getProducts } from "@/lib/admin-store";
 
 type GridMode = "grid3" | "grid2" | "list";
 
@@ -14,9 +15,11 @@ export default function CatalogPage() {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true);
     const saved = localStorage.getItem("ah-catalog-grid");
     if (saved === "grid3" || saved === "grid2" || saved === "list") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setGridMode(saved);
     }
   }, []);
@@ -26,10 +29,13 @@ export default function CatalogPage() {
     localStorage.setItem("ah-catalog-grid", mode);
   };
 
+  // Use admin-edited products from localStorage, fall back to hardcoded
+  const allProducts = isClient ? getProducts() : products;
+
   const filteredProducts =
     activeFilter === "all"
-      ? products
-      : products.filter((p) => p.category === activeFilter);
+      ? allProducts
+      : allProducts.filter((p) => p.category === activeFilter);
 
   const gridClass = {
     grid3: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16",

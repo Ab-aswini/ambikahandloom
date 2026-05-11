@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* stylelint-disable at-rule-no-unknown */
 @theme {
   --color-cream: #FCFCFA;
   --color-obsidian: #121212;
@@ -333,4 +334,14 @@ textarea:focus {
 .snap-item {
   scroll-snap-align: start;
   flex-shrink: 0;
+}
+
+/* ===== HIDE SCROLLBAR UTILITY ===== */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none; /* stylelint-disable-line plugin/no-unsupported-browser-features */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

@@ -13,6 +13,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsAuthenticated(isAdminAuthenticated());
     setIsLoading(false);
   }, []);

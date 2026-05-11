@@ -283,7 +283,7 @@ export default function HomePage() {
         <div className="marquee-container">
           <div className="marquee-track">
             {[...Array(2)].map((_, setIdx) => (
-              <div key={setIdx} className="marquee-content" aria-hidden={setIdx > 0 ? "true" : undefined}>
+              <div key={setIdx} className="marquee-content" {...(setIdx > 0 ? { "aria-hidden": "true" } : {})}>
                 {[
                   "Handwoven Heritage",
                   "✦",

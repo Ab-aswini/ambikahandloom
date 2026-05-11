@@ -7,7 +7,7 @@ import { ArrowLeft, Save, Eye } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Product } from "@/lib/products";
-import { getProductById, saveProduct, getProducts } from "@/lib/admin-store";
+import { getProductById, saveProduct, getProducts, Review, getReviewsByProduct, saveReview, deleteReview, compressImage } from "@/lib/admin-store";
 
 const emptyProduct: Product = {
   id: "",
@@ -24,6 +24,7 @@ const emptyProduct: Product = {
   inStock: true,
   artisanStory: "",
   careInstructions: [],
+  images: [],
 };
 
 const categoryOptions = [
@@ -44,6 +45,12 @@ export default function AdminProductEditor() {
   const [isSaving, setIsSaving] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
+  // Reviews state
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [newReview, setNewReview] = useState<Partial<Review>>({ rating: 5 });
+  const [isCompressingReview, setIsCompressingReview] = useState(false);
+  const [isCompressingProduct, setIsCompressingProduct] = useState(false);
+
   useEffect(() => {
     setIsClient(true);
     if (!isNew) {
@@ -52,6 +59,7 @@ export default function AdminProductEditor() {
         setProduct(found);
         setDetailsText(found.details.join("\n"));
         setCareText((found.careInstructions || []).join("\n"));
+        setReviews(getReviewsByProduct(id));
       }
     } else {
       // Generate new ID
@@ -83,6 +91,71 @@ export default function AdminProductEditor() {
       setIsSaving(false);
       router.push("/admin/products");
     }, 500);
+  };
+
+  const handleReviewImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    setIsCompressingReview(true);
+    try {
+      const compressedImages: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const base64 = await compressImage(files[i]);
+        compressedImages.push(base64);
+      }
+
+      setNewReview((prev) => ({ 
+        ...prev, 
+        images: [...(prev.images || []), ...compressedImages] 
+      }));
+    } finally {
+      setIsCompressingReview(false);
+    }
+  };
+
+  const handleProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    setIsCompressingProduct(true);
+    try {
+      const compressedImages: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const base64 = await compressImage(files[i]);
+        compressedImages.push(base64);
+      }
+
+      setProduct((prev) => ({
+        ...prev,
+        images: [...(prev.images || []), ...compressedImages]
+      }));
+    } finally {
+      setIsCompressingProduct(false);
+    }
+  };
+
+  const handleAddReview = () => {
+    if (!newReview.customerName || !newReview.comment) return;
+    
+    const review: Review = {
+      id: `REV-${Date.now()}`,
+      productId: product.id,
+      customerName: newReview.customerName,
+      rating: newReview.rating || 5,
+      comment: newReview.comment,
+      images: newReview.images,
+      createdAt: new Date().toISOString()
+    };
+
+    saveReview(review);
+    setReviews(getReviewsByProduct(product.id));
+    setNewReview({ rating: 5 }); // reset
+  };
+
+  const handleDeleteReview = (reviewId: string) => {
+    deleteReview(reviewId);
+    setReviews(getReviewsByProduct(product.id));
   };
 
   if (!isClient) return null;
@@ -309,6 +382,135 @@ export default function AdminProductEditor() {
               />
             </div>
           </div>
+
+          {/* Manage Reviews */}
+          {!isNew && (
+            <div className="bg-white/[0.03] border border-white/5 rounded-xl p-6 space-y-6">
+              <h3 className="text-xs text-white/30 uppercase tracking-wider">
+                Happy Customer Reviews
+              </h3>
+
+              {/* Add New Review Form */}
+              <div className="p-4 bg-white/5 border border-white/10 rounded-lg space-y-4">
+                <h4 className="text-sm font-medium text-white/80">Add New Review</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs text-white/40 mb-1.5">Customer Name</label>
+                    <input
+                      type="text"
+                      value={newReview.customerName || ""}
+                      onChange={(e) => setNewReview({ ...newReview, customerName: e.target.value })}
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-white/25 transition-colors"
+                      placeholder="e.g. Priya S."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-white/40 mb-1.5">Rating (1-5)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="5"
+                      value={newReview.rating || 5}
+                      onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) })}
+                      placeholder="5"
+                      title="Rating from 1 to 5"
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-white/25 transition-colors"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs text-white/40 mb-1.5">Customer Comment</label>
+                  <textarea
+                    value={newReview.comment || ""}
+                    onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-white/25 transition-colors resize-none"
+                    rows={3}
+                    placeholder="Their feedback from WhatsApp..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-white/40 mb-1.5">Happy Customer Photos (Optional)</label>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      title="Upload customer photos"
+                      onChange={handleReviewImageUpload}
+                      disabled={isCompressingReview}
+                      className="text-xs text-white/40 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-white/10 file:text-white hover:file:bg-white/20 disabled:opacity-50"
+                    />
+                    {isCompressingReview && (
+                      <div className="flex items-center gap-2 text-xs text-amber-400">
+                        <div className="w-3.5 h-3.5 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+                        Compressing...
+                      </div>
+                    )}
+                  </div>
+                  {newReview.images && newReview.images.length > 0 && (
+                    <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+                      {newReview.images.map((img, idx) => (
+                        <div key={idx} className="w-12 h-12 relative rounded overflow-hidden flex-shrink-0">
+                          <Image src={img} alt="preview" fill className="object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Fallback for legacy single image preview */}
+                  {!newReview.images?.length && newReview.image && (
+                    <div className="w-12 h-12 relative rounded overflow-hidden mt-4">
+                      <Image src={newReview.image} alt="preview" fill className="object-cover" />
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={handleAddReview}
+                  disabled={!newReview.customerName || !newReview.comment}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+                >
+                  Add Review
+                </button>
+              </div>
+
+              {/* Existing Reviews List */}
+              <div className="space-y-4">
+                {reviews.length === 0 ? (
+                  <p className="text-sm text-white/40">No reviews added yet.</p>
+                ) : (
+                  reviews.map((r) => (
+                    <div key={r.id} className="flex gap-4 p-4 border border-white/5 rounded-lg bg-white/[0.02]">
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-white">{r.customerName}</p>
+                            <p className="text-xs text-white/40">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</p>
+                          </div>
+                          <button 
+                            onClick={() => handleDeleteReview(r.id)}
+                            className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <p className="text-sm text-white/70 mt-2 line-clamp-2">{r.comment}</p>
+                        
+                        {/* Display Multiple Images or Legacy Single Image */}
+                        {(r.images?.length ? r.images : (r.image ? [r.image] : [])).length > 0 && (
+                          <div className="flex gap-2 mt-3 overflow-x-auto">
+                            {(r.images?.length ? r.images : (r.image ? [r.image] : [])).map((img, idx) => (
+                              <div key={idx} className="w-16 h-16 relative rounded-md overflow-hidden flex-shrink-0">
+                                <Image src={img} alt={`${r.customerName} photo ${idx + 1}`} fill className="object-cover" />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sidebar */}
@@ -316,9 +518,11 @@ export default function AdminProductEditor() {
           {/* Image Preview */}
           <div className="bg-white/[0.03] border border-white/5 rounded-xl p-6">
             <h3 className="text-xs text-white/30 uppercase tracking-wider mb-4">
-              Product Image
+              Product Images
             </h3>
-            <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-white/5 mb-4">
+            
+            {/* Main Image */}
+            <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-white/5 mb-4 group">
               {product.image && (
                 <Image
                   src={product.image}
@@ -329,9 +533,53 @@ export default function AdminProductEditor() {
                 />
               )}
             </div>
+
+            {/* Gallery Thumbnails */}
+            {product.images && product.images.length > 0 && (
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {product.images.map((img, idx) => (
+                  <div key={idx} className="relative aspect-square rounded overflow-hidden group">
+                    <Image src={img} alt={`Product photo ${idx + 1}`} fill className="object-cover" />
+                    <button
+                      onClick={() => setProduct((prev) => ({
+                        ...prev,
+                        images: prev.images?.filter((_, i) => i !== idx) || []
+                      }))}
+                      className="absolute top-1 right-1 w-5 h-5 bg-red-500/80 hover:bg-red-500 text-white text-xs rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                      title="Remove image"
+                      aria-label={`Remove image ${idx + 1}`}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div>
               <label className="block text-xs text-white/40 mb-1.5">
-                Image URL
+                Upload Additional Photos
+              </label>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                title="Upload additional product photos"
+                onChange={handleProductImageUpload}
+                disabled={isCompressingProduct}
+                className="w-full text-xs text-white/40 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-white/10 file:text-white hover:file:bg-white/20 disabled:opacity-50"
+              />
+              {isCompressingProduct && (
+                <div className="flex items-center gap-2 text-xs text-amber-400 mt-2">
+                  <div className="w-3.5 h-3.5 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+                  Compressing images...
+                </div>
+              )}
+            </div>
+            
+            <div className="mt-4">
+              <label className="block text-xs text-white/40 mb-1.5">
+                Main Image URL (Fallback)
               </label>
               <input
                 type="text"

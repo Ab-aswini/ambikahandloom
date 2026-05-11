@@ -14,6 +14,7 @@ export interface Product {
   inStock: boolean;
   artisanStory?: string;
   careInstructions?: string[];
+  images?: string[];
 }
 
 export const products: Product[] = [
@@ -46,6 +47,11 @@ export const products: Product[] = [
       "Avoid direct sunlight for prolonged periods",
       "Iron on low heat with a pressing cloth",
       "Do not wring or twist the fabric",
+    ],
+    images: [
+      "/images/saree-hero-1.png",
+      "/images/saree-detail-2.png",
+      "/images/saree-product-3.png",
     ],
   },
   {

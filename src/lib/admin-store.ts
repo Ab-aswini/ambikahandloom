@@ -26,10 +26,45 @@ export interface Order {
   isGift: boolean;
   giftMessage: string;
   totalPrice: number;
-  status: "confirmed" | "weaving" | "dispatched" | "delivered";
+  paymentType: "full" | "advance";
+  paymentUtr?: string;
+  adminNote?: string;
+  status: "awaiting_verification" | "confirmed" | "weaving" | "dispatched" | "delivered";
   createdAt: string;
   updatedAt: string;
 }
+
+// ─── Review Types ───
+export interface Review {
+  id: string;
+  productId: string;
+  customerName: string;
+  rating: number; // 1-5
+  comment: string;
+  image?: string; // Base64 or URL (Legacy / Primary)
+  images?: string[]; // Array of Base64 or URLs
+  createdAt: string;
+}
+
+const defaultReviews: Review[] = [
+  {
+    id: "REV-001",
+    productId: "AH-001",
+    customerName: "Priya S.",
+    rating: 5,
+    comment: "Absolutely stunning! The intricacies of the pallu are mesmerizing. Wore it to a wedding and received so many compliments.",
+    image: "https://images.unsplash.com/photo-1583391733958-692b6a93910c?auto=format&fit=crop&w=400&q=80",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "REV-002",
+    productId: "AH-001",
+    customerName: "Ananya M.",
+    rating: 5,
+    comment: "The feel of the silk is incredibly premium. Thank you for the quick delivery and beautiful packaging.",
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString()
+  }
+];
 
 // ─── Site Settings Types ───
 export interface SiteSettings {
@@ -64,6 +99,7 @@ const KEYS = {
   ORDERS: "ambika_orders",
   SETTINGS: "ambika_settings",
   ADMIN_AUTH: "ambika_admin_auth",
+  REVIEWS: "ambika_reviews",
 };
 
 // Admin password — in production, use an env variable
@@ -84,6 +120,48 @@ function getItem<T>(key: string, fallback: T): T {
 function setItem<T>(key: string, value: T): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(key, JSON.stringify(value));
+}
+
+/**
+ * Compresses an image file to a Base64 string to fit within localStorage limits.
+ * Downscales to max 800px width/height and 0.7 JPEG quality.
+ */
+export function compressImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const MAX_SIZE = 800;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        // Compress to JPEG with 0.7 quality
+        resolve(canvas.toDataURL("image/jpeg", 0.7));
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
 }
 
 // ─── Products ───
@@ -135,14 +213,52 @@ export function saveOrder(order: Order): void {
   setItem(KEYS.ORDERS, orders);
 }
 
-export function updateOrderStatus(id: string, status: Order["status"]): void {
+export function updateOrderStatus(id: string, status: Order["status"], note?: string): void {
   const orders = getOrders();
   const idx = orders.findIndex((o) => o.id === id);
   if (idx >= 0) {
     orders[idx].status = status;
+    if (note !== undefined) {
+      orders[idx].adminNote = note;
+    }
     orders[idx].updatedAt = new Date().toISOString();
     setItem(KEYS.ORDERS, orders);
   }
+}
+
+export function updateOrderUtr(id: string, utr: string): void {
+  const orders = getOrders();
+  const idx = orders.findIndex((o) => o.id === id);
+  if (idx >= 0) {
+    orders[idx].paymentUtr = utr;
+    orders[idx].updatedAt = new Date().toISOString();
+    setItem(KEYS.ORDERS, orders);
+  }
+}
+
+// ─── Reviews ───
+export function getReviews(): Review[] {
+  return getItem<Review[]>(KEYS.REVIEWS, defaultReviews);
+}
+
+export function getReviewsByProduct(productId: string): Review[] {
+  return getReviews().filter(r => r.productId === productId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export function saveReview(review: Review): void {
+  const reviews = getReviews();
+  const idx = reviews.findIndex((r) => r.id === review.id);
+  if (idx >= 0) {
+    reviews[idx] = review;
+  } else {
+    reviews.push(review);
+  }
+  setItem(KEYS.REVIEWS, reviews);
+}
+
+export function deleteReview(id: string): void {
+  const reviews = getReviews().filter((r) => r.id !== id);
+  setItem(KEYS.REVIEWS, reviews);
 }
 
 // ─── Site Settings ───

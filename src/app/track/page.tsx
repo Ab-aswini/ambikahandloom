@@ -2,21 +2,23 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Package, Scissors, Truck, CheckCircle2, Clock, ArrowLeft } from "lucide-react";
+import { Search, Package, Scissors, Truck, CheckCircle2, Clock, ArrowLeft, Shield, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { getOrderById } from "@/lib/admin-store";
 
 interface OrderStatus {
   orderId: string;
   currentStep: number;
+  adminNote?: string;
   steps: { title: string; desc: string; date: string; icon: React.ReactNode }[];
 }
 
 const statusToStep: Record<string, number> = {
-  confirmed: 0,
-  weaving: 1,
-  dispatched: 2,
-  delivered: 3,
+  awaiting_verification: 0,
+  confirmed: 1,
+  weaving: 2,
+  dispatched: 3,
+  delivered: 4,
 };
 
 export default function TrackPage() {
@@ -35,7 +37,6 @@ export default function TrackPage() {
     setTimeout(() => {
       setIsSearching(false);
 
-      // Try to find a real order first
       const realOrder = getOrderById(inputId.toUpperCase());
       if (realOrder) {
         const step = statusToStep[realOrder.status] ?? 0;
@@ -43,27 +44,18 @@ export default function TrackPage() {
         setOrderStatus({
           orderId: realOrder.id,
           currentStep: step,
+          adminNote: realOrder.adminNote,
           steps: [
-            { title: "Order Confirmed", desc: `Order placed by ${realOrder.customer.fullName}. Payment verification in progress.`, date: orderDate, icon: <Package size={18} /> },
-            { title: "Weaving in Progress", desc: "Your masterpiece is being handwoven by a master artisan.", date: "In progress", icon: <Scissors size={18} /> },
-            { title: "Dispatched Securely", desc: "Carefully packaged and dispatched with premium insured shipping.", date: "Pending", icon: <Truck size={18} /> },
-          ],
-        });
-      } else if (inputId.toUpperCase().startsWith("AH-")) {
-        // Fallback to simulated data for demo IDs
-        setOrderStatus({
-          orderId: inputId.toUpperCase(),
-          currentStep: 1,
-          steps: [
-            { title: "Order Placed", desc: "Your order has been confirmed and payment verified.", date: "May 10, 2026 · 10:30 PM", icon: <Package size={18} /> },
-            { title: "Weaving in Progress", desc: "Your masterpiece is being handwoven by a master artisan in Sonepur, Odisha.", date: "Estimated: May 25, 2026", icon: <Scissors size={18} /> },
-            { title: "Dispatched Securely", desc: "Carefully packaged and dispatched with premium insured shipping.", date: "Estimated: June 15, 2026", icon: <Truck size={18} /> },
+            { title: "Verification Pending", desc: "Your payment reference is under manual review.", date: orderDate, icon: <Shield size={18} /> },
+            { title: "Order Confirmed", desc: `Payment verified. Order placed by ${realOrder.customer.fullName}.`, date: step >= 1 ? orderDate : "Pending", icon: <Package size={18} /> },
+            { title: "Weaving / Processing", desc: "Your masterpiece is being prepared.", date: step >= 2 ? "In progress" : "Pending", icon: <Scissors size={18} /> },
+            { title: "Dispatched Securely", desc: "Carefully packaged and dispatched with premium insured shipping.", date: step >= 3 ? "In transit" : "Pending", icon: <Truck size={18} /> },
           ],
         });
       } else {
         setNotFound(true);
       }
-    }, 1500);
+    }, 1200);
   };
 
   return (
@@ -80,7 +72,7 @@ export default function TrackPage() {
         {/* Search */}
         <motion.form onSubmit={handleTrack} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-12">
           <div className="relative">
-            <input type="text" value={inputId} onChange={(e) => setInputId(e.target.value)} placeholder="Enter Order ID (e.g. AH-XXXXX)" className="w-full px-6 py-4 pr-14 bg-warm-100 border border-warm-200 rounded-2xl text-base placeholder:text-obsidian/30 font-serif tracking-wide" />
+            <input type="text" value={inputId} onChange={(e) => setInputId(e.target.value)} placeholder="Enter Order ID (e.g. AH-XXXXX)" className="w-full px-6 py-4 pr-14 bg-warm-100 border border-warm-200 rounded-2xl text-base placeholder:text-obsidian/30 font-serif tracking-wide focus:outline-none focus:border-obsidian/30 transition-colors" />
             <button type="submit" disabled={isSearching} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-obsidian text-cream rounded-xl flex items-center justify-center hover:bg-indigo-deep transition-colors" aria-label="Track order">
               {isSearching ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}><Clock size={16} /></motion.div> : <Search size={16} />}
             </button>
@@ -104,38 +96,48 @@ export default function TrackPage() {
               <div className="bg-warm-100/50 border border-warm-200 rounded-2xl p-6 md:p-8 mb-8">
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-[10px] tracking-[0.2em] uppercase text-obsidian/40">Order ID</p>
-                  <span className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] tracking-[0.15em] uppercase font-medium rounded-full">Active</span>
+                  <span className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] tracking-[0.15em] uppercase font-medium rounded-full border border-emerald-200">Active</span>
                 </div>
                 <p className="font-serif text-xl tracking-wider">{orderStatus.orderId}</p>
+                
+                {orderStatus.adminNote && (
+                  <div className="mt-4 p-4 bg-white/60 rounded-xl border border-obsidian/5 flex items-start gap-3">
+                    <MessageSquare size={16} className="text-obsidian/40 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-[10px] tracking-[0.15em] uppercase text-obsidian/40 mb-1">Update from Store</p>
+                      <p className="text-sm text-obsidian/80 italic">&quot;{orderStatus.adminNote}&quot;</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Timeline Steps */}
-              <div className="space-y-0">
+              <div className="space-y-0 relative z-10">
                 {orderStatus.steps.map((step, i) => {
                   const isComplete = i < orderStatus.currentStep;
                   const isCurrent = i === orderStatus.currentStep;
                   const isPending = i > orderStatus.currentStep;
 
                   return (
-                    <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.15 + 0.2 }} className="flex gap-4 md:gap-6">
+                    <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 + 0.1 }} className="flex gap-4 md:gap-6 relative">
                       {/* Timeline Line & Dot */}
                       <div className="flex flex-col items-center">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${isComplete ? "bg-emerald-100 text-emerald-600" : isCurrent ? "bg-indigo-deep text-cream" : "bg-warm-200 text-obsidian/30"}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${isComplete ? "bg-emerald-100 text-emerald-600 shadow-sm" : isCurrent ? "bg-indigo-deep text-cream shadow-md" : "bg-warm-200 text-obsidian/30"}`}>
                           {isComplete ? <CheckCircle2 size={18} /> : step.icon}
                         </div>
                         {i < orderStatus.steps.length - 1 && (
-                          <div className={`w-0.5 h-20 ${isComplete ? "bg-emerald-200" : "bg-warm-200"}`} />
+                          <div className={`absolute top-10 bottom-0 w-0.5 -ml-px left-5 ${isComplete ? "bg-emerald-200" : "bg-warm-200"}`} />
                         )}
                       </div>
 
                       {/* Content */}
-                      <div className="pb-8">
+                      <div className={`pb-12 ${i === orderStatus.steps.length - 1 ? "pb-0" : ""}`}>
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className={`font-serif text-lg ${isPending ? "text-obsidian/30" : ""}`}>{step.title}</h3>
                           {isCurrent && <span className="w-2 h-2 bg-indigo-deep rounded-full animate-pulse-soft" />}
                         </div>
-                        <p className={`text-sm mb-1 ${isPending ? "text-obsidian/20" : "text-obsidian/50"}`}>{step.desc}</p>
-                        <p className={`text-xs ${isPending ? "text-obsidian/15" : "text-obsidian/30"}`}>{step.date}</p>
+                        <p className={`text-sm mb-1 ${isPending ? "text-obsidian/20" : "text-obsidian/60"}`}>{step.desc}</p>
+                        <p className={`text-xs ${isPending ? "text-obsidian/15" : "text-obsidian/30 font-medium"}`}>{step.date}</p>
                       </div>
                     </motion.div>
                   );
