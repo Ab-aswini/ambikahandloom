@@ -1,26 +1,179 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-cream: #FCFCFA;
+  --color-obsidian: #121212;
+  --color-indigo-deep: #1A2B4C;
+  --color-crimson-muted: #8B263E;
+  --color-warm-100: #F7F5F0;
+  --color-warm-200: #EDE8DF;
+  --color-warm-300: #D9D1C4;
+
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --animate-fade-in: fadeIn 1.2s ease-out forwards;
+  --animate-slide-up: slideUp 0.8s ease-out forwards;
+  --animate-pulse-soft: pulseSoft 2s ease-in-out infinite;
+  --animate-slide-in-right: slideInRight 0.5s ease-out forwards;
+  --animate-float: float 6s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slideInRight {
+  0% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--color-cream);
+  color: var(--color-obsidian);
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-warm-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-indigo-deep);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-indigo-deep);
+  color: var(--color-cream);
+}
+
+/* Editorial Typography */
+.font-editorial {
+  font-family: var(--font-serif);
+  letter-spacing: -0.04em;
+}
+
+/* Magnetic Button Effect */
+.magnetic-btn {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.magnetic-btn:hover {
+  transform: scale(1.02);
+}
+
+/* Glass Effect */
+.glass-effect {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(252, 252, 250, 0.85);
+  border: 1px solid rgba(209, 201, 188, 0.3);
+}
+
+/* Image Hover Scale */
+.img-hover-scale {
+  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.img-hover-scale:hover {
+  transform: scale(1.03);
+}
+
+/* Line Reveal Animation */
+.line-reveal {
+  position: relative;
+  overflow: hidden;
+}
+
+.line-reveal::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--color-obsidian);
+  transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.line-reveal:hover::after {
+  width: 100%;
+}
+
+/* Toast Animation */
+.toast-enter {
+  animation: slideInRight 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+/* Grain Texture Overlay */
+.grain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.015;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Input Focus Styles */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-indigo-deep);
+  box-shadow: 0 0 0 2px rgba(26, 43, 76, 0.1);
+}
+
+/* Filter Pill Styles */
+.filter-pill {
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.filter-pill:hover {
+  background-color: var(--color-indigo-deep);
+  color: var(--color-cream);
+}
+
+.filter-pill.active {
+  background-color: var(--color-obsidian);
+  color: var(--color-cream);
 }
