@@ -146,6 +146,7 @@ export default function HomePage() {
                   alt="Close-up of intricate Ikat weave pattern"
                   fill
                   className="object-cover img-hover-scale"
+                  priority
                   sizes="(max-width: 768px) 50vw, 30vw"
                 />
               </motion.div>
