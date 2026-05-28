@@ -359,7 +359,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== THE CRAFT SECTION ===== */}
-      <section ref={craftRef} className="py-20 md:py-32 bg-obsidian text-cream overflow-hidden">
+      <section ref={craftRef} className="relative py-20 md:py-32 bg-obsidian text-cream overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
             <motion.div
@@ -506,7 +506,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== CTA SECTION ===== */}
-      <section ref={ctaRef} className="py-20 md:py-32">
+      <section ref={ctaRef} className="relative py-20 md:py-32">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
