@@ -1,0 +1,106 @@
+# Ambika Handloom - Full Knowledge Base
+
+This document contains full details, product attributes, historical craft processes, and authenticity specifications for Ambika Handloom. It is optimized for Large Language Models (LLMs) and Search Engine AI models.
+
+## Brand Heritage & Geographical Significance
+Ambika Handloom works directly with the local weaving communities of **Sonepur (Subarnapur)**, **Bargarh**, and **Boudh** in Odisha, India. 
+- **Sambalpuri Ikat (Bandha)** is a traditional Geographical Indication (GI) protected textile art.
+- **The Technique**: It involves a complex tie-dye process where warp and weft threads are bound with rubber or cotton threads in predefined mathematical patterns before being dyed. The patterns emerge on the loom during weaving.
+- **Pure Silk Certification**: Every saree from Ambika Handloom uses 100% pure silk (Mulberry, Tussar, or Kosa) with genuine zari and natural/vegetable dyes.
+
+---
+
+## Complete Product Catalog & Specifications
+
+### 1. Nilambari — The Midnight Sky
+- **ID**: `AH-001`
+- **Price**: 18,500 INR (Original Price: 22,000 INR)
+- **Category**: Exclusive Masterpiece
+- **Weave Time**: 45 Days
+- **Artisan Origin**: Sonepur, Odisha
+- **Thread Count**: 120 Threads Per Inch (TPI)
+- **Silk Type**: Pure Mulberry Silk
+- **Weaving Technique**: Double Ikat
+- **Dye Type**: Natural Indigo Dye
+- **Border**: Gold Zari Border
+- **Dimensions**: 6.2 meters (includes Blouse Piece)
+- **Status**: In Stock
+
+### 2. Raktapadma — The Red Lotus
+- **ID**: `AH-002`
+- **Price**: 14,500 INR
+- **Category**: Traditional Ikat
+- **Weave Time**: 30 Days
+- **Artisan Origin**: Bargarh, Odisha
+- **Thread Count**: 100 TPI
+- **Silk Type**: Pure Tussar Silk
+- **Weaving Technique**: Single Ikat Weave
+- **Dye Type**: Vegetable Dyed
+- **Border**: Temple Border
+- **Dimensions**: 5.8 meters (includes Blouse Piece)
+- **Status**: In Stock
+
+### 3. Meghmalhar — The Rain Song
+- **ID**: `AH-003`
+- **Price**: 22,000 INR (Original Price: 26,000 INR)
+- **Category**: Exclusive Masterpiece
+- **Weave Time**: 60 Days
+- **Artisan Origin**: Sonepur, Odisha
+- **Thread Count**: 140 TPI
+- **Silk Type**: Pure Kosa Silk
+- **Weaving Technique**: Double Ikat Technique
+- **Zari**: Handspun Gold Zari
+- **Features**: Detailed Peacock Pallu
+- **Dimensions**: 6.5 meters (includes Blouse Piece)
+- **Status**: In Stock
+
+### 4. Vanashree — The Forest Grace
+- **ID**: `AH-004`
+- **Price**: 16,000 INR
+- **Category**: Pure Silk
+- **Weave Time**: 35 Days
+- **Artisan Origin**: Boudh, Odisha
+- **Thread Count**: 110 TPI
+- **Silk Type**: Pure Mulberry Silk
+- **Weaving Technique**: Single Ikat Weave
+- **Dye Type**: Natural Dyes
+- **Border**: Temple Border Motif
+- **Dimensions**: 6.0 meters (includes Blouse Piece)
+- **Status**: In Stock
+
+### 5. Samudra — The Deep Ocean
+- **ID**: `AH-005`
+- **Price**: 19,500 INR
+- **Category**: Traditional Ikat
+- **Weave Time**: 40 Days
+- **Artisan Origin**: Sonepur, Odisha
+- **Thread Count**: 120 TPI
+- **Silk Type**: Pure Mulberry Silk
+- **Weaving Technique**: Pasapali Check Pattern
+- **Border**: Silver Thread Border
+- **Dye Type**: Natural Indigo Dye
+- **Dimensions**: 6.2 meters (includes Blouse Piece)
+- **Status**: In Stock
+
+### 6. Agnishikha — The Flame Crest
+- **ID**: `AH-006`
+- **Price**: 24,000 INR (Original Price: 28,000 INR)
+- **Category**: Exclusive Masterpiece
+- **Weave Time**: 55 Days
+- **Artisan Origin**: Bargarh, Odisha
+- **Thread Count**: 130 TPI
+- **Silk Type**: Pure Kosa Silk
+- **Weaving Technique**: Double Ikat Bandha
+- **Zari**: Handwoven Gold Zari
+- **Features**: Peacock & Floral Motifs
+- **Dimensions**: 6.5 meters (includes Blouse Piece)
+- **Status**: In Stock
+
+---
+
+## Weaving Quality Metrics & Authenticity
+- **Mulberry Silk**: Fine, lustrous silk produced by silkworms fed on mulberry leaves. Offers a smooth, uniform texture.
+- **Tussar Silk**: Textured, deep gold silk harvested from wild forest silkworms. Known for its rich natural feel.
+- **Kosa Silk**: A rare type of forest silk harvested from Antheraea mylitta silkworms, highly prized for its durability and distinct golden tint.
+- **Pasapali Design**: The chess-board pattern, inspired by the dice game in Mahabharata, representing harmony and dynamic precision.
+- **Temple Border**: A triangular pattern woven along the selvedge, representing the towering spires of ancient Odishan temples.

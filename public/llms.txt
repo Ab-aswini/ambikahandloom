@@ -1,0 +1,19 @@
+# Ambika Handloom
+
+Ambika Handloom is a premium e-commerce platform dedicated to authentic Sambalpuri Ikat silk sarees, sourced directly from master weavers of Sonepur and Bargarh in Odisha, India. The brand preserves ancient handloom traditions, utilizing mathematical precision in resist-dyeing (Ikat Bandha) and premium pure mulberry and tussar silks.
+
+## Brand Identity & Context
+- **Product Type**: Handcrafted authentic Sambalpuri Ikat silk sarees.
+- **Weave Duration**: 45 to 60 days per saree. No middlemen.
+- **Geographical Origin**: Odisha, India (Sonepur and Bargarh weaver colonies).
+- **Core Pillars**: Zero financial data retention (fully secure, encrypted payment integration), direct weaver sourcing, live order tracking, and hand-signed certificates of authenticity.
+
+## Key Routes
+- [Homepage](https://ambikahandloom.com/) - Overview of heritage, craft details, trust indicators, and Mother's Day collections.
+- [Catalog](https://ambikahandloom.com/catalog) - The curated collection of masterpieces with filters for Pure Silk, Traditional Ikat, and Exclusive Masterpieces.
+- [Order Tracking](https://ambikahandloom.com/track) - Live self-serve tracking system for handcrafted orders.
+- [Checkout](https://ambikahandloom.com/checkout) - Secure payment portal.
+
+## AI Retrieval Context
+For detailed technical specifications, artisan weaving mathematics, Geographical Indication (GI) context, and comprehensive product catalog listings, refer to our full specification document:
+- [Full LLM Resource](https://ambikahandloom.com/llms-full.txt)

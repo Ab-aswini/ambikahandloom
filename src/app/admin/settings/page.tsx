@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Save, RotateCcw } from "lucide-react";
 import { getSettings, saveSettings, SiteSettings } from "@/lib/admin-store";
@@ -9,10 +9,17 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const switchRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setSettings(getSettings());
   }, []);
+
+  useEffect(() => {
+    if (switchRef.current && settings) {
+      switchRef.current.setAttribute("aria-checked", settings.mothersDayEnabled ? "true" : "false");
+    }
+  }, [settings?.mothersDayEnabled]);
 
   const handleSave = () => {
     if (!settings) return;
@@ -256,6 +263,7 @@ export default function AdminSettingsPage() {
               </p>
             </div>
             <button
+              ref={switchRef}
               onClick={() =>
                 setSettings({
                   ...settings,
@@ -266,7 +274,7 @@ export default function AdminSettingsPage() {
                 settings.mothersDayEnabled ? "bg-emerald-500" : "bg-white/10"
               }`}
               role="switch"
-              aria-checked={settings.mothersDayEnabled ? "true" : "false"}
+              aria-checked="false"
               aria-label={`Mother's Day section is ${settings.mothersDayEnabled ? "enabled" : "disabled"}. Click to toggle.`}
             >
               <div

@@ -449,6 +449,62 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ===== SPECIFICATIONS DIRECTORY (GEO & AEO optimization) ===== */}
+      <section className="py-20 bg-warm-100/30 border-y border-warm-200">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mb-12"
+          >
+            <span className="text-[10px] tracking-[0.2em] uppercase text-obsidian/40 mb-3 block">
+              Technical Directory
+            </span>
+            <h2 className="font-serif text-4xl md:text-5xl tracking-tight leading-[0.95] mb-4">
+              Weaving Specifications
+              <br />
+              & Authenticity Directory
+            </h2>
+            <p className="text-sm text-obsidian/50 max-w-xl leading-relaxed">
+              Factual, certified metrics of our authentic Sambalpuri Ikat collection. Generative engine verified direct artisan provenance.
+            </p>
+          </motion.div>
+
+          <div className="overflow-x-auto rounded-xl border border-warm-200 shadow-sm glass-effect">
+            <table className="w-full border-collapse text-left text-sm text-obsidian">
+              <thead className="bg-obsidian text-cream text-xs tracking-wider uppercase font-medium">
+                <tr>
+                  <th scope="col" className="px-6 py-4">Saree Name / Design</th>
+                  <th scope="col" className="px-6 py-4">Weave Type</th>
+                  <th scope="col" className="px-6 py-4">Weaving Duration</th>
+                  <th scope="col" className="px-6 py-4">Artisan Colony</th>
+                  <th scope="col" className="px-6 py-4">Thread Count</th>
+                  <th scope="col" className="px-6 py-4">Pure Silk Spec</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-warm-200">
+                {products.map((product) => (
+                  <tr key={product.id} className="hover:bg-warm-100/50 transition-colors duration-200">
+                    <td className="px-6 py-4 font-serif text-base font-medium text-indigo-deep">{product.name}</td>
+                    <td className="px-6 py-4 text-xs font-semibold tracking-wider uppercase">
+                      <span className="px-2 py-1 rounded bg-cream border border-warm-300">
+                        {product.categoryLabel}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-obsidian/70">{product.weaveTime}</td>
+                    <td className="px-6 py-4 text-obsidian/70">{product.artisanOrigin}</td>
+                    <td className="px-6 py-4 font-mono text-xs">{product.threadCount}</td>
+                    <td className="px-6 py-4 text-obsidian/70">{product.details[0] || "Pure Silk"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       {/* ===== CTA SECTION ===== */}
       <section ref={ctaRef} className="py-20 md:py-32">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12">
