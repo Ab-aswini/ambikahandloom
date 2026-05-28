@@ -340,7 +340,12 @@ textarea:focus {
 /* ===== HIDE SCROLLBAR UTILITY ===== */
 .no-scrollbar {
   -ms-overflow-style: none;
-  scrollbar-width: none; /* stylelint-disable-line plugin/no-unsupported-browser-features */
+}
+
+@supports (scrollbar-width: none) {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
 }
 
 .no-scrollbar::-webkit-scrollbar {
