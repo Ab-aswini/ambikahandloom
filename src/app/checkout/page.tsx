@@ -19,6 +19,11 @@ export default function CheckoutPage() {
   const [utr, setUtr] = useState("");
   const [isUtrSubmitted, setIsUtrSubmitted] = useState(false);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
+
+  // Snapshot the order totals before clearing the cart
+  const [savedTotalPrice, setSavedTotalPrice] = useState(0);
+  const [savedPayableAmount, setSavedPayableAmount] = useState(0);
+  const [savedPaymentType, setSavedPaymentType] = useState<"full" | "advance">("full");
   
   const [formData, setFormData] = useState({
     fullName: "", email: "", phone: "", address: "", city: "", state: "", pincode: "", giftMessage: "",
@@ -73,6 +78,11 @@ export default function CheckoutPage() {
 
     // Save order (syncs to Supabase + localStorage fallback)
     saveOrder(newOrder);
+
+    // Snapshot totals BEFORE clearing the cart (fixes ₹0 display bug)
+    setSavedTotalPrice(totalPrice);
+    setSavedPayableAmount(payableAmount);
+    setSavedPaymentType(paymentType);
 
     setIsSubmitted(true);
     clearCart();
@@ -151,11 +161,11 @@ export default function CheckoutPage() {
               </div>
 
               <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-sm"><span className="text-obsidian/60">Total Value</span><span>₹{totalPrice.toLocaleString("en-IN")}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-obsidian/60">Payment Mode</span><span>{paymentType === "full" ? "Full Payment" : "20% Advance Booking"}</span></div>
-                <div className="flex justify-between pt-4 border-t border-obsidian/5"><span className="font-medium">Amount to Pay</span><span className="font-serif text-xl">₹{payableAmount.toLocaleString("en-IN")}</span></div>
-                {paymentType === "advance" && (
-                  <p className="text-xs text-obsidian/40 text-right mt-1">Remaining ₹{(totalPrice - advanceAmount).toLocaleString("en-IN")} due before dispatch.</p>
+                <div className="flex justify-between text-sm"><span className="text-obsidian/60">Total Value</span><span>₹{savedTotalPrice.toLocaleString("en-IN")}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-obsidian/60">Payment Mode</span><span>{savedPaymentType === "full" ? "Full Payment" : "20% Advance Booking"}</span></div>
+                <div className="flex justify-between pt-4 border-t border-obsidian/5"><span className="font-medium">Amount to Pay</span><span className="font-serif text-xl">₹{savedPayableAmount.toLocaleString("en-IN")}</span></div>
+                {savedPaymentType === "advance" && (
+                  <p className="text-xs text-obsidian/40 text-right mt-1">Remaining ₹{(savedTotalPrice - Math.round(savedTotalPrice * 0.2)).toLocaleString("en-IN")} due before dispatch.</p>
                 )}
               </div>
             </div>
