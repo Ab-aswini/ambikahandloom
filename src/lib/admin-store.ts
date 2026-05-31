@@ -674,7 +674,7 @@ export function saveSettings(settings: SiteSettings): void {
 // ADMIN AUTH (session-based, unchanged)
 // ═══════════════════════════════════════════════════════════
 
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "ambika2026";
+const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "";
 
 export function isAdminAuthenticated(): boolean {
   if (typeof window === "undefined") return false;
