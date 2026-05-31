@@ -90,8 +90,8 @@ const DEFAULT_SETTINGS: SiteSettings = {
   paymentAccountNo: "XXXX XXXX 4521",
   paymentIfsc: "SBIN0012345",
   contactEmail: "hello@ambikahandloom.in",
-  contactPhone: "+919876543210",
-  contactWhatsapp: "+919876543210",
+  contactPhone: "+918658476300",
+  contactWhatsapp: "+918658476300",
   contactAddress: "Sonepur Weaver Colony, Subarnapur, Odisha, India — 767017",
   heroTitle: "Woven Heritage. Mastered for the Modern Era.",
   heroSubtitle:
@@ -726,7 +726,7 @@ export function getStats() {
 export function getWhatsAppNumber(settings?: SiteSettings): string {
   const envNum = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
   if (envNum) return envNum;
-  const phone = settings?.contactWhatsapp || settings?.contactPhone || "+919876543210";
+  const phone = settings?.contactWhatsapp || settings?.contactPhone || "+918658476300";
   return phone.replace(/\D/g, "");
 }
 

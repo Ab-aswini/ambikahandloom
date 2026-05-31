@@ -123,7 +123,7 @@ export default function Footer() {
                   <Mail size={16} />
                 </a>
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+918658476300"
                   className="w-10 h-10 border border-cream/20 rounded-full flex items-center justify-center hover:border-cream/60 hover:bg-cream/5 transition-all duration-300"
                   aria-label="Phone"
                   title="Phone"

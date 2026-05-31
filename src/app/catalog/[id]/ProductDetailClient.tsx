@@ -23,7 +23,7 @@ import { useToast } from "@/lib/toast-context";
 import { Product } from "@/lib/products";
 
 const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919876543210";
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918658476300";
 
 export default function ProductDetailClient({
   product,

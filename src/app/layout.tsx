@@ -128,7 +128,7 @@ export default function RootLayout({
           "caption": "Ambika Handloom — Authentic Sambalpuri Ikat Sarees from Odisha"
         },
         "image": `${siteUrl}/images/saree-hero-1.png`,
-        "telephone": "+919876543210",
+        "telephone": "+918658476300",
         "description": "Ambika Handloom sells authentic Sambalpuri Ikat silk sarees, ladies wear, and handloom fabric directly from master artisans of Sonepur and Bargarh, Odisha.",
         "address": {
           "@type": "PostalAddress",

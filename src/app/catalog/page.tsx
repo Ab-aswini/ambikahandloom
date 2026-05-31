@@ -10,7 +10,7 @@ import { products, sections, categoryBySections, Product } from "@/lib/products"
 type GridMode = "grid3" | "grid2" | "list";
 
 const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919876543210";
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918658476300";
 
 function CatalogContent() {
   const searchParams = useSearchParams();

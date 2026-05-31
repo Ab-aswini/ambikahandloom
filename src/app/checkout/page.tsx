@@ -95,7 +95,7 @@ export default function CheckoutPage() {
 
 
   const openWhatsApp = () => {
-    const phone = (settings?.contactWhatsapp || settings?.contactPhone || "+919876543210").replace(/\D/g, '');
+    const phone = (settings?.contactWhatsapp || settings?.contactPhone || "+918658476300").replace(/\D/g, '');
     const msg = `Namaste Ambika Handloom 🙏\n\nI have made the payment for my Order *${orderId}*.\nPlease find the payment screenshot attached.\n\nThank you!`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
   };

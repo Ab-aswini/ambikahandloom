@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 
 const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919876543210";
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918658476300";
 
 export default function WhatsAppFAB() {
   const [isOpen, setIsOpen] = useState(false);
