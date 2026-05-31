@@ -21,7 +21,7 @@ export type { Product };
 // ─── Detect if Supabase is configured ──────────────────────
 function isSupabaseConfigured(): boolean {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  return Boolean(url && url !== "https://your-project-id.supabase.co");
+  return Boolean(supabase && url && url !== "https://your-project-id.supabase.co");
 }
 
 // ─── Order Types ────────────────────────────────────────────
@@ -243,7 +243,7 @@ export function compressImage(file: File): Promise<string> {
 
 export async function getProductsAsync(): Promise<Product[]> {
   if (isSupabaseConfigured()) {
-    const { data, error } = await supabase
+    const { data, error } = await supabase!
       .from("products")
       .select("*")
       .order("sort_order", { ascending: true });
@@ -263,7 +263,7 @@ export function getProducts(): Product[] {
 
 export async function getProductByIdAsync(id: string): Promise<Product | undefined> {
   if (isSupabaseConfigured()) {
-    const { data, error } = await supabase
+    const { data, error } = await supabase!
       .from("products")
       .select("*")
       .eq("id", id)
@@ -280,7 +280,7 @@ export function getProductById(id: string): Product | undefined {
 
 export async function saveProductAsync(product: Product): Promise<void> {
   if (isSupabaseConfigured()) {
-    const { error } = await supabase.from("products").upsert({
+    const { error } = await supabase!.from("products").upsert({
       id: product.id,
       name: product.name,
       price: product.price,
@@ -316,7 +316,7 @@ export function saveProduct(product: Product): void {
 
 export async function deleteProductAsync(id: string): Promise<void> {
   if (isSupabaseConfigured()) {
-    const { error } = await supabase.from("products").delete().eq("id", id);
+    const { error } = await supabase!.from("products").delete().eq("id", id);
     if (error) console.error("Supabase deleteProduct error:", error);
     return;
   }
@@ -337,7 +337,7 @@ export function reorderProducts(products: Product[]): void {
 
 export async function getOrdersAsync(): Promise<Order[]> {
   if (isSupabaseConfigured()) {
-    const { data: orderRows, error } = await supabase
+    const { data: orderRows, error } = await supabase!
       .from("orders")
       .select("*")
       .order("created_at", { ascending: false });
@@ -346,7 +346,7 @@ export async function getOrdersAsync(): Promise<Order[]> {
     // Fetch all items for these orders
     const ids = (orderRows ?? []).map((o) => o.id);
     if (ids.length === 0) return [];
-    const { data: itemRows } = await supabase
+    const { data: itemRows } = await supabase!
       .from("order_items")
       .select("*")
       .in("order_id", ids);
@@ -373,14 +373,14 @@ export function getOrders(): Order[] {
 
 export async function getOrderByIdAsync(id: string): Promise<Order | undefined> {
   if (isSupabaseConfigured()) {
-    const { data: row, error } = await supabase
+    const { data: row, error } = await supabase!
       .from("orders")
       .select("*")
       .eq("id", id)
       .single();
     if (error || !row) return undefined;
 
-    const { data: itemRows } = await supabase
+    const { data: itemRows } = await supabase!
       .from("order_items")
       .select("*")
       .eq("order_id", id);
@@ -402,7 +402,7 @@ export function getOrderById(id: string): Order | undefined {
 
 export async function saveOrderAsync(order: Order): Promise<void> {
   if (isSupabaseConfigured()) {
-    const { error } = await supabase.from("orders").upsert({
+    const { error } = await supabase!.from("orders").upsert({
       id: order.id,
       customer_name: order.customer.fullName,
       customer_email: order.customer.email,
@@ -424,9 +424,9 @@ export async function saveOrderAsync(order: Order): Promise<void> {
     if (error) { console.error("Supabase saveOrder error:", error); return; }
 
     // Insert order items (delete old first for upsert behaviour)
-    await supabase.from("order_items").delete().eq("order_id", order.id);
+    await supabase!.from("order_items").delete().eq("order_id", order.id);
     if (order.items.length > 0) {
-      await supabase.from("order_items").insert(
+      await supabase!.from("order_items").insert(
         order.items.map((item) => ({
           order_id: order.id,
           product_id: item.productId,
@@ -471,7 +471,7 @@ export async function updateOrderStatusAsync(
     const updates: any = { status, updated_at: new Date().toISOString() };
     if (note !== undefined) updates.admin_note = note;
     if (trackingNote !== undefined) updates.tracking_note = trackingNote;
-    const { error } = await supabase.from("orders").update(updates).eq("id", id);
+    const { error } = await supabase!.from("orders").update(updates).eq("id", id);
     if (error) console.error("Supabase updateOrderStatus error:", error);
     return;
   }
@@ -492,7 +492,7 @@ export function updateOrderStatus(id: string, status: Order["status"], note?: st
 
 export async function updateOrderUtrAsync(id: string, utr: string): Promise<void> {
   if (isSupabaseConfigured()) {
-    const { error } = await supabase
+    const { error } = await supabase!
       .from("orders")
       .update({ payment_utr: utr, updated_at: new Date().toISOString() })
       .eq("id", id);
@@ -538,7 +538,7 @@ const defaultReviews: Review[] = [
 
 export async function getReviewsAsync(): Promise<Review[]> {
   if (isSupabaseConfigured()) {
-    const { data, error } = await supabase
+    const { data, error } = await supabase!
       .from("reviews")
       .select("*")
       .order("created_at", { ascending: false });
@@ -554,7 +554,7 @@ export function getReviews(): Review[] {
 
 export async function getReviewsByProductAsync(productId: string): Promise<Review[]> {
   if (isSupabaseConfigured()) {
-    const { data, error } = await supabase
+    const { data, error } = await supabase!
       .from("reviews")
       .select("*")
       .eq("product_id", productId)
@@ -575,7 +575,7 @@ export function getReviewsByProduct(productId: string): Review[] {
 
 export async function saveReviewAsync(review: Review): Promise<void> {
   if (isSupabaseConfigured()) {
-    const { error } = await supabase.from("reviews").upsert({
+    const { error } = await supabase!.from("reviews").upsert({
       id: review.id,
       product_id: review.productId,
       customer_name: review.customerName,
@@ -599,7 +599,7 @@ export function saveReview(review: Review): void {
 
 export async function deleteReviewAsync(id: string): Promise<void> {
   if (isSupabaseConfigured()) {
-    const { error } = await supabase.from("reviews").delete().eq("id", id);
+    const { error } = await supabase!.from("reviews").delete().eq("id", id);
     if (error) console.error("Supabase deleteReview error:", error);
     return;
   }
@@ -616,7 +616,7 @@ export function deleteReview(id: string): void {
 
 export async function getSettingsAsync(): Promise<SiteSettings> {
   if (isSupabaseConfigured()) {
-    const { data, error } = await supabase
+    const { data, error } = await supabase!
       .from("site_settings")
       .select("*")
       .eq("id", 1)
@@ -645,7 +645,7 @@ export function getSettings(): SiteSettings {
 
 export async function saveSettingsAsync(settings: SiteSettings): Promise<void> {
   if (isSupabaseConfigured()) {
-    const { error } = await supabase.from("site_settings").upsert({
+    const { error } = await supabase!.from("site_settings").upsert({
       id: 1,
       payment_upi: settings.paymentUpi,
       payment_bank: settings.paymentBank,
