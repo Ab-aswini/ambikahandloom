@@ -400,7 +400,9 @@ export default function ProductDetailClient({
               Frequently Asked Questions
             </h2>
             <div className="space-y-3 max-w-3xl">
-              {product.faqItems.map((faq, i) => (
+              {product.faqItems.map((faq, i) => {
+                const isOpen = openFaq === i;
+                return (
                 <div
                   key={i}
                   className="border border-warm-200 rounded-xl overflow-hidden"
@@ -408,13 +410,13 @@ export default function ProductDetailClient({
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                     className="w-full flex items-center justify-between p-5 text-left hover:bg-warm-100/50 transition-colors"
-                    aria-expanded={openFaq === i ? "true" : "false"}
+                    aria-expanded={isOpen}
                   >
                     <span className="text-sm font-medium pr-4">
                       {faq.question}
                     </span>
                     <motion.div
-                      animate={{ rotate: openFaq === i ? 180 : 0 }}
+                      animate={{ rotate: isOpen ? 180 : 0 }}
                       transition={{ duration: 0.2 }}
                     >
                       <ChevronDown
@@ -424,7 +426,7 @@ export default function ProductDetailClient({
                     </motion.div>
                   </button>
                   <AnimatePresence>
-                    {openFaq === i && (
+                    {isOpen && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
@@ -439,7 +441,8 @@ export default function ProductDetailClient({
                     )}
                   </AnimatePresence>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </motion.section>
         )}
