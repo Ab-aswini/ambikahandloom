@@ -115,7 +115,7 @@ export default function Footer() {
                   <Globe size={16} />
                 </a>
                 <a
-                  href="mailto:hello@ambikahandloom.com"
+                  href="mailto:hello@ambikahandloom.in"
                   className="w-10 h-10 border border-cream/20 rounded-full flex items-center justify-center hover:border-cream/60 hover:bg-cream/5 transition-all duration-300"
                   aria-label="Email"
                   title="Email"

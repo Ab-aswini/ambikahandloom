@@ -89,7 +89,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   paymentBank: "State Bank of India",
   paymentAccountNo: "XXXX XXXX 4521",
   paymentIfsc: "SBIN0012345",
-  contactEmail: "hello@ambikahandloom.com",
+  contactEmail: "hello@ambikahandloom.in",
   contactPhone: "+919876543210",
   contactWhatsapp: "+919876543210",
   contactAddress: "Sonepur Weaver Colony, Subarnapur, Odisha, India — 767017",
@@ -765,7 +765,7 @@ export function buildTrackingWhatsAppUrl(order: Order, message: string, settings
 
 ${message}
 
-Track your order anytime: ${process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.vercel.app"}/track
+Track your order anytime: ${process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in"}/track
 
 Thank you for choosing Ambika Handloom 🙏`;
 

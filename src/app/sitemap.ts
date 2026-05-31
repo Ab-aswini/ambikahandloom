@@ -3,7 +3,7 @@ import { products, sections } from "@/lib/products";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.vercel.app";
+    process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
   const now = new Date();
 
   // Static pages

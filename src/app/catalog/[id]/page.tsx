@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) return { title: "Product Not Found" };
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.vercel.app";
+    process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
   const productUrl = `${siteUrl}/catalog/${product.id}`;
   const imageUrl = `${siteUrl}${product.image}`;
 
@@ -103,7 +103,7 @@ export default async function ProductDetailPage({ params }: Props) {
   if (!product) notFound();
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.vercel.app";
+    process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
   const productUrl = `${siteUrl}/catalog/${product.id}`;
 
   // ─── Full JSON-LD for Product + Breadcrumb + FAQ + ImageObject ───

@@ -17,7 +17,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
 
 export const metadata: Metadata = {
   title: {
@@ -111,7 +111,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   // Global JSON-LD — SEO (Organization, WebSite), AEO (FAQPage), GEO (LocalBusiness, provenance)
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [

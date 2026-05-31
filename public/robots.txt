@@ -12,7 +12,7 @@ Allow: /catalog/
 Allow: /catalog
 
 # Sitemaps
-Sitemap: https://ambikahandloom.vercel.app/sitemap.xml
+Sitemap: https://ambikahandloom.in/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1

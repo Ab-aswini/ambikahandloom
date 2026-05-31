@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/checkout/success", "/admin/"],
     },
-    sitemap: "https://ambikahandloom.com/sitemap.xml",
+    sitemap: "https://ambikahandloom.in/sitemap.xml",
   };
 }
