@@ -153,6 +153,7 @@ export default function OrderDetailPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value as Order["status"])}
+                aria-label="Order status"
                 className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-white/20 transition-colors cursor-pointer"
               >
                 {STATUS_STEPS.map((s) => (

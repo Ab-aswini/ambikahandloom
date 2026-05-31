@@ -408,7 +408,7 @@ export default function ProductDetailClient({
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                     className="w-full flex items-center justify-between p-5 text-left hover:bg-warm-100/50 transition-colors"
-                    aria-expanded={openFaq === i}
+                    aria-expanded={openFaq === i ? true : false}
                   >
                     <span className="text-sm font-medium pr-4">
                       {faq.question}

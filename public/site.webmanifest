@@ -34,7 +34,7 @@
       "src": "/images/saree-hero-1.png",
       "sizes": "1200x630",
       "type": "image/png",
-      "label": "Ambika Handloom — Premium Sambalpuri Ikat Sarees"
+      "form_factor": "wide"
     }
   ],
   "categories": ["shopping", "fashion", "lifestyle"],
