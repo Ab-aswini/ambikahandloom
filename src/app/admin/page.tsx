@@ -24,6 +24,7 @@ export default function AdminDashboard() {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true);
     setStats(getStats());
     setRecentOrders(getOrders().slice(-5).reverse());

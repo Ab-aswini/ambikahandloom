@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Package, Scissors, Truck, CheckCircle2, Clock, ArrowLeft, Shield, MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { getOrderById } from "@/lib/admin-store";
+import { getOrderByIdAsync } from "@/lib/admin-store";
 
 interface OrderStatus {
   orderId: string;
@@ -27,35 +27,38 @@ export default function TrackPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
-  const handleTrack = (e: React.FormEvent) => {
+  const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputId.trim()) return;
 
     setIsSearching(true);
     setNotFound(false);
 
-    setTimeout(() => {
+    try {
+      const realOrder = await getOrderByIdAsync(inputId.toUpperCase());
       setIsSearching(false);
 
-      const realOrder = getOrderById(inputId.toUpperCase());
       if (realOrder) {
         const step = statusToStep[realOrder.status] ?? 0;
         const orderDate = new Date(realOrder.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" });
         setOrderStatus({
           orderId: realOrder.id,
           currentStep: step,
-          adminNote: realOrder.adminNote,
+          adminNote: realOrder.trackingNote || realOrder.adminNote,
           steps: [
             { title: "Verification Pending", desc: "Your payment reference is under manual review.", date: orderDate, icon: <Shield size={18} /> },
             { title: "Order Confirmed", desc: `Payment verified. Order placed by ${realOrder.customer.fullName}.`, date: step >= 1 ? orderDate : "Pending", icon: <Package size={18} /> },
-            { title: "Weaving / Processing", desc: "Your masterpiece is being prepared.", date: step >= 2 ? "In progress" : "Pending", icon: <Scissors size={18} /> },
+            { title: "Weaving / Processing", desc: "Your masterpiece is being prepared by our artisans.", date: step >= 2 ? "In progress" : "Pending", icon: <Scissors size={18} /> },
             { title: "Dispatched Securely", desc: "Carefully packaged and dispatched with premium insured shipping.", date: step >= 3 ? "In transit" : "Pending", icon: <Truck size={18} /> },
           ],
         });
       } else {
         setNotFound(true);
       }
-    }, 1200);
+    } catch {
+      setIsSearching(false);
+      setNotFound(true);
+    }
   };
 
   return (

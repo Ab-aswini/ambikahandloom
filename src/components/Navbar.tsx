@@ -31,13 +31,18 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/catalog", label: "Collection" },
+    { href: "/catalog?section=sarees", label: "Sarees" },
+    { href: "/catalog?section=ladies-wear", label: "Ladies Wear" },
+    { href: "/catalog?section=cut-pieces", label: "Cut Pieces" },
     { href: "/track", label: "Track Order" },
   ];
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
+    // match exact for home, prefix for others (strip query params)
+    const hrefBase = href.split("?")[0];
+    if (hrefBase === "/catalog") return pathname.startsWith("/catalog");
+    return pathname.startsWith(hrefBase);
   };
 
   return (
@@ -97,6 +102,8 @@ export default function Navbar() {
               <Link
                 href="/track"
                 className="hidden md:flex items-center gap-2 text-sm font-sans tracking-wide text-obsidian/70 hover:text-obsidian transition-colors duration-300"
+                title="Track Order"
+                aria-label="Track Order"
               >
                 <Package size={16} />
               </Link>

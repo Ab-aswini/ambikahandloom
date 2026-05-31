@@ -12,6 +12,7 @@ export default function AdminSettingsPage() {
   const switchRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSettings(getSettings());
   }, []);
 
@@ -19,7 +20,7 @@ export default function AdminSettingsPage() {
     if (switchRef.current && settings) {
       switchRef.current.setAttribute("aria-checked", settings.mothersDayEnabled ? "true" : "false");
     }
-  }, [settings?.mothersDayEnabled]);
+  }, [settings]);
 
   const handleSave = () => {
     if (!settings) return;

@@ -31,7 +31,7 @@ export default function ProductCard({
 
   if (layout === "editorial") {
     return (
-      <Link href={`/catalog/${product.id}`}>
+      <Link href={`/catalog/${product.id}`} title={product.name}>
       <motion.div
         initial={{ opacity: 0, y: 60 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -45,10 +45,11 @@ export default function ProductCard({
           <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-warm-100 group cursor-pointer">
             <Image
               src={product.image}
-              alt={product.name}
+              alt={`${product.name} — ${product.categoryLabel} handwoven from ${product.artisanOrigin}. ${product.fabric || "Pure Silk"} by Ambika Handloom.`}
               fill
               className="object-cover img-hover-scale"
               sizes="(max-width: 768px) 100vw, 50vw"
+              title={`${product.name} | ${product.categoryLabel} | Ambika Handloom`}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-obsidian/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -145,7 +146,7 @@ export default function ProductCard({
 
   // Grid layout
   return (
-    <Link href={`/catalog/${product.id}`}>
+    <Link href={`/catalog/${product.id}`} title={product.name}>
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -156,10 +157,11 @@ export default function ProductCard({
       <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-warm-100 mb-4">
         <Image
           src={product.image}
-          alt={product.name}
+          alt={`${product.name} — ${product.categoryLabel} handwoven from ${product.artisanOrigin}. ${product.fabric || "Pure Silk"} by Ambika Handloom.`}
           fill
           className="object-cover img-hover-scale"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          title={`${product.name} | ${product.categoryLabel} | Ambika Handloom`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-obsidian/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 

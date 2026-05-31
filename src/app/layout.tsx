@@ -16,48 +16,77 @@ const cormorant = Cormorant_Garamond({
   style: ["normal", "italic"],
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Ambika Handloom — Authentic Sambalpuri Ikat Silk Sarees",
+  title: {
+    default: "Ambika Handloom — Authentic Sambalpuri Ikat Silk Sarees, Ladies Wear & Fabric",
+    template: "%s | Ambika Handloom",
+  },
   description:
-    "Discover authentic Sambalpuri Ikat silk sarees sourced directly from master artisans of Odisha. Uncompromising pure silk, mesmerizing Ikat mathematics, and absolute digital security. Woven Heritage. Mastered for the Modern Era.",
-  metadataBase: new URL("https://ambikahandloom.com"),
+    "Buy authentic Sambalpuri Ikat silk sarees, ladies kurta sets, dupattas, and ikat cut pieces directly from master artisans of Odisha. Pure silk, natural dyes, free shipping across India. Woven heritage. Mastered for the modern era.",
+  metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
   },
   keywords: [
-    "Sambalpuri Ikat",
-    "Sambalpuri Silk Saree",
+    "Sambalpuri Ikat Saree",
+    "Sambalpuri Silk Saree buy online",
     "Odisha Handloom Saree",
     "Double Ikat Silk Saree",
-    "Pure Mulberry Silk",
+    "Pure Mulberry Silk Saree",
     "Handcrafted Saree India",
     "Pasapali Silk Saree",
-    "Temple Border Saree",
+    "Temple Border Saree Odisha",
     "Odisha Weavers Direct",
-    "Traditional Indian Silk",
+    "Traditional Indian Silk Saree",
+    "Ikat Kurta Set online",
+    "Sambalpuri Dupatta",
+    "Handloom Ladies Wear India",
+    "Ikat Cotton Cut Piece",
+    "Sambalpuri Silk Fabric",
+    "Ambika Handloom Odisha",
+    "Sonepur weaver saree",
+    "Bargarh Ikat saree",
   ],
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      { rel: "mask-icon", url: "/favicon.svg", color: "#1A2B4C" },
+    ],
+  },
+  manifest: "/site.webmanifest",
   openGraph: {
-    title: "Ambika Handloom — Woven Heritage. Mastered for the Modern Era.",
+    title: "Ambika Handloom — Authentic Sambalpuri Ikat Sarees, Ladies Wear & Fabric",
     description:
-      "Authentic Sambalpuri masterpieces sourced directly from master artisans. Uncompromising pure silk, mesmerizing Ikat mathematics.",
-    url: "https://ambikahandloom.com",
+      "Authentic Sambalpuri Ikat sarees, ladies wear, and handloom fabric sourced directly from master artisans of Odisha. Pure silk, natural dyes, free shipping India-wide.",
+    url: SITE_URL,
     siteName: "Ambika Handloom",
     images: [
       {
-        url: "/images/saree-hero-1.png",
+        url: `/images/saree-hero-1.png`,
         width: 1200,
         height: 630,
-        alt: "Ambika Handloom — Authentic Sambalpuri Ikat Silk Sarees",
+        alt: "Ambika Handloom — Authentic Sambalpuri Ikat Silk Sarees from Odisha, India",
+        type: "image/png",
       },
     ],
-    locale: "en_US",
+    locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ambika Handloom — Authentic Sambalpuri Ikat Silk Sarees",
+    title: "Ambika Handloom — Authentic Sambalpuri Ikat Sarees & Ladies Wear",
     description:
-      "Discover authentic Sambalpuri Ikat silk sarees sourced directly from master artisans of Odisha. Uncompromising pure silk.",
+      "Buy authentic Sambalpuri Ikat silk sarees, ladies kurta sets, and handloom fabric directly from artisans of Odisha.",
     images: ["/images/saree-hero-1.png"],
   },
   robots: {
@@ -71,6 +100,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    google: "",
+  },
 };
 
 export default function RootLayout({
@@ -78,19 +110,26 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Global JSON-LD graph structure for SEO, AEO, and GEO optimization
+  // Global JSON-LD — SEO (Organization, WebSite), AEO (FAQPage), GEO (LocalBusiness, provenance)
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.vercel.app";
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
-        "@id": "https://ambikahandloom.com/#organization",
+        "@type": ["Organization", "LocalBusiness"],
+        "@id": `${siteUrl}/#organization`,
         "name": "Ambika Handloom",
-        "url": "https://ambikahandloom.com",
-        "logo": "https://ambikahandloom.com/images/logo.png",
-        "email": "hello@ambikahandloom.com",
+        "url": siteUrl,
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${siteUrl}/favicon.svg`,
+          "contentUrl": `${siteUrl}/favicon.svg`,
+          "name": "Ambika Handloom Logo",
+          "caption": "Ambika Handloom — Authentic Sambalpuri Ikat Sarees from Odisha"
+        },
+        "image": `${siteUrl}/images/saree-hero-1.png`,
         "telephone": "+919876543210",
-        "description": "Preserving the ancient art of Sambalpuri Ikat weaving. Every thread tells a story of heritage, every saree is a masterpiece woven with devotion.",
+        "description": "Ambika Handloom sells authentic Sambalpuri Ikat silk sarees, ladies wear, and handloom fabric directly from master artisans of Sonepur and Bargarh, Odisha.",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Sonepur Weaver Colony",
@@ -99,31 +138,79 @@ export default function RootLayout({
           "postalCode": "767017",
           "addressCountry": "IN"
         },
-        "sameAs": [
-          "https://instagram.com/ambikahandloom",
-          "https://facebook.com/ambikahandloom"
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 20.8326,
+          "longitude": 83.9110
+        },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Ambika Handloom Collection",
+          "itemListElement": [
+            { "@type": "OfferCatalog", "name": "Sambalpuri Ikat Sarees" },
+            { "@type": "OfferCatalog", "name": "Ladies Wear — Kurtas, Dupattas, Dress Materials" },
+            { "@type": "OfferCatalog", "name": "Cut Pieces — Silk and Cotton Ikat Fabric" }
+          ]
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "availableLanguage": ["English", "Odia", "Hindi"],
+          "contactOption": "https://schema.org/TollFree"
+        },
+        "knowsAbout": [
+          "Sambalpuri Ikat Weaving",
+          "Double Ikat Technique",
+          "Pure Mulberry Silk",
+          "Tussar Silk",
+          "Kosa Silk",
+          "Natural Dyes",
+          "Odisha Handloom Heritage"
         ]
       },
       {
         "@type": "WebSite",
-        "@id": "https://ambikahandloom.com/#website",
-        "url": "https://ambikahandloom.com",
+        "@id": `${siteUrl}/#website`,
+        "url": siteUrl,
         "name": "Ambika Handloom",
-        "description": "Authentic Sambalpuri Ikat Silk Sarees from Odisha",
-        "publisher": {
-          "@id": "https://ambikahandloom.com/#organization"
+        "description": "Authentic Sambalpuri Ikat Sarees, Ladies Wear and Handloom Fabric from Odisha, India",
+        "inLanguage": "en-IN",
+        "publisher": { "@id": `${siteUrl}/#organization` },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": `${siteUrl}/catalog?q={search_term_string}`
+          },
+          "query-input": "required name=search_term_string"
         }
       },
       {
         "@type": "FAQPage",
-        "@id": "https://ambikahandloom.com/#faq",
+        "@id": `${siteUrl}/#faq`,
         "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is a Sambalpuri Ikat saree?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sambalpuri Ikat is a traditional handloom saree from the Sambalpur region of Odisha, India. It uses a resist-dyeing technique where threads are tied and dyed before weaving, creating patterns that appear from within the fabric. Sambalpuri Ikat has a GI (Geographical Indication) tag from the Government of India."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does Ambika Handloom sell ladies wear and cut pieces apart from sarees?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Ambika Handloom offers three collections: Sarees (Sambalpuri Ikat silk), Ladies Wear (Ikat kurta sets, dupattas, and dress materials), and Cut Pieces (pure silk and cotton Ikat fabric sold by the meter). All products are handwoven by artisans from Odisha."
+            }
+          },
           {
             "@type": "Question",
             "name": "What makes Ambika Handloom sarees authentic?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Every saree from Ambika Handloom is sourced directly from master weavers in Sonepur and Bargarh (Odisha) and comes with a certificate of authenticity. We deal exclusively in 100% pure silk (Mulberry, Tussar, Kosa) with handcrafted details, bypassing all middlemen."
+              "text": "Every product from Ambika Handloom is sourced directly from master weavers in Sonepur and Bargarh, Odisha. We use 100% pure silk (Mulberry, Tussar, Kosa) and natural dyes, bypassing all middlemen. Each piece comes with artisan provenance details."
             }
           },
           {
@@ -131,15 +218,23 @@ export default function RootLayout({
             "name": "How long does it take to weave a Sambalpuri Ikat saree?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Due to the intricate double-ikat and single-ikat resist dyeing mathematics, it takes our master weavers between 45 to 60 days of intensive physical labor to weave a single masterwork saree."
+              "text": "Due to the complex double-ikat resist-dyeing process where individual threads are tie-dyed before weaving, a single masterpiece saree takes between 30 to 60 days of intensive work by a master artisan."
             }
           },
           {
             "@type": "Question",
-            "name": "What is the security protocol for online purchases?",
+            "name": "Do you offer free shipping across India?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Ambika Handloom enforces a strict zero-retention policy for customer financial data. All transactions are fully encrypted, and no sensitive payment details are stored on our servers."
+              "text": "Yes, Ambika Handloom offers free shipping across all states in India. Orders are dispatched within 2-3 business days and delivered in 5-7 business days via premium insured courier."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I place a custom order for a specific saree design or color?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, Ambika Handloom accepts custom orders for specific patterns, colors, and fabric combinations. Please WhatsApp us with your requirements and our artisan team will guide you through the process. Custom orders take 45-90 days."
             }
           }
         ]

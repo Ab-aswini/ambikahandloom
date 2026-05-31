@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, ChevronDown, ChevronUp, Package, MessageCircle, AlertCircle, Save, Check } from "lucide-react";
-import { getOrders, updateOrderStatus, Order } from "@/lib/admin-store";
+import { getOrders, updateOrderStatus, Order, OrderItem } from "@/lib/admin-store";
 
 const statusFlow: Order["status"][] = [
   "awaiting_verification",
@@ -28,6 +28,7 @@ export default function AdminOrdersPage() {
   const [noteInput, setNoteInput] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true);
     setOrders(getOrders().reverse());
   }, []);
@@ -148,10 +149,23 @@ export default function AdminOrdersPage() {
   );
 }
 
+interface OrderCardProps {
+  order: Order;
+  i: number;
+  expandedId: string | null;
+  setExpandedId: (id: string | null) => void;
+  handleStatusChange: (orderId: string, newStatus: Order["status"], currentNote?: string) => void;
+  handleNoteSave: (orderId: string, status: Order["status"]) => void;
+  openWhatsApp: (phone: string, orderId: string, status: Order["status"]) => void;
+  noteInput: Record<string, string>;
+  setNoteInput: (noteInput: Record<string, string>) => void;
+  highlight?: boolean;
+}
+
 // Order Card Component
 function OrderCard({ 
   order, i, expandedId, setExpandedId, handleStatusChange, handleNoteSave, openWhatsApp, noteInput, setNoteInput, highlight = false
-}: any) {
+}: OrderCardProps) {
   const isExpanded = expandedId === order.id;
 
   return (
@@ -286,7 +300,7 @@ function OrderCard({
                     Items ({order.items.length})
                   </h4>
                   <div className="space-y-2">
-                    {order.items.map((item: any, idx: number) => (
+                    {order.items.map((item: OrderItem, idx: number) => (
                       <div key={idx} className="flex justify-between text-sm">
                         <span className="text-white/50 truncate pr-2">
                           {item.productName.split("—")[0].trim()} ×{item.quantity}

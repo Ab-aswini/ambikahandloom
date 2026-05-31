@@ -110,6 +110,7 @@ export default function Footer() {
                   href="#"
                   className="w-10 h-10 border border-cream/20 rounded-full flex items-center justify-center hover:border-cream/60 hover:bg-cream/5 transition-all duration-300"
                   aria-label="Website"
+                  title="Website"
                 >
                   <Globe size={16} />
                 </a>
@@ -117,6 +118,7 @@ export default function Footer() {
                   href="mailto:hello@ambikahandloom.com"
                   className="w-10 h-10 border border-cream/20 rounded-full flex items-center justify-center hover:border-cream/60 hover:bg-cream/5 transition-all duration-300"
                   aria-label="Email"
+                  title="Email"
                 >
                   <Mail size={16} />
                 </a>
@@ -124,6 +126,7 @@ export default function Footer() {
                   href="tel:+919876543210"
                   className="w-10 h-10 border border-cream/20 rounded-full flex items-center justify-center hover:border-cream/60 hover:bg-cream/5 transition-all duration-300"
                   aria-label="Phone"
+                  title="Phone"
                 >
                   <Phone size={16} />
                 </a>

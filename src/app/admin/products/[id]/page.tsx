@@ -15,7 +15,9 @@ const emptyProduct: Product = {
   price: 0,
   image: "/images/saree-hero-1.png",
   category: "pure-silk",
+  section: "sarees",
   categoryLabel: "Pure Silk",
+  sectionLabel: "Sarees",
   weaveTime: "",
   artisanOrigin: "",
   threadCount: "",
@@ -28,9 +30,18 @@ const emptyProduct: Product = {
 };
 
 const categoryOptions = [
-  { value: "pure-silk", label: "Pure Silk" },
-  { value: "traditional-ikat", label: "Traditional Ikat" },
-  { value: "exclusive-masterpieces", label: "Exclusive Masterpiece" },
+  // Sarees
+  { value: "pure-silk", label: "Pure Silk", section: "sarees", sectionLabel: "Sarees" },
+  { value: "traditional-ikat", label: "Traditional Ikat", section: "sarees", sectionLabel: "Sarees" },
+  { value: "exclusive-masterpieces", label: "Exclusive Masterpiece", section: "sarees", sectionLabel: "Sarees" },
+  // Ladies Wear
+  { value: "ladies-wear-kurta", label: "Kurta Set", section: "ladies-wear", sectionLabel: "Ladies Wear" },
+  { value: "ladies-wear-dupatta", label: "Dupatta", section: "ladies-wear", sectionLabel: "Ladies Wear" },
+  { value: "ladies-wear-dress-material", label: "Dress Material", section: "ladies-wear", sectionLabel: "Ladies Wear" },
+  // Cut Pieces
+  { value: "cut-pieces-silk", label: "Silk Cut Piece", section: "cut-pieces", sectionLabel: "Cut Pieces" },
+  { value: "cut-pieces-cotton", label: "Cotton Cut Piece", section: "cut-pieces", sectionLabel: "Cut Pieces" },
+  { value: "cut-pieces-blouse", label: "Blouse Piece", section: "cut-pieces", sectionLabel: "Cut Pieces" },
 ];
 
 export default function AdminProductEditor() {
@@ -52,6 +63,7 @@ export default function AdminProductEditor() {
   const [isCompressingProduct, setIsCompressingProduct] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true);
     if (!isNew) {
       const found = getProductById(id);
@@ -74,13 +86,16 @@ export default function AdminProductEditor() {
   const handleSave = () => {
     setIsSaving(true);
 
-    const categoryLabel =
-      categoryOptions.find((c) => c.value === product.category)?.label ||
-      "Pure Silk";
+    const selectedCatOpt = categoryOptions.find((c) => c.value === product.category);
+    const categoryLabel = selectedCatOpt?.label || "Pure Silk";
+    const section = (selectedCatOpt?.section || "sarees") as Product["section"];
+    const sectionLabel = selectedCatOpt?.sectionLabel || "Sarees";
 
     const updatedProduct: Product = {
       ...product,
       categoryLabel,
+      section,
+      sectionLabel,
       details: detailsText.split("\n").filter((d) => d.trim()),
       careInstructions: careText.split("\n").filter((c) => c.trim()),
     };

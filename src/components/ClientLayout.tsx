@@ -9,6 +9,7 @@ import Navbar from "@/components/Navbar";
 import CartDrawer from "@/components/CartDrawer";
 import ToastContainer from "@/components/ToastContainer";
 import Footer from "@/components/Footer";
+import WhatsAppFAB from "@/components/WhatsAppFAB";
 
 function ScrollProgress() {
   const { scrollYProgress } = useScroll();
@@ -36,6 +37,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         {!isAdmin && <ScrollProgress />}
         {!isAdmin && <Navbar />}
         {!isAdmin && <CartDrawer />}
+        {!isAdmin && <WhatsAppFAB />}
         <ToastContainer />
         <main>{children}</main>
         {!isAdmin && <Footer />}

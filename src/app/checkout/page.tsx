@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Shield, Lock, ArrowLeft, CheckCircle2, Gift, Send, FileText, Smartphone } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { useToast } from "@/lib/toast-context";
-import { saveOrder, getSettings, updateOrderUtr, SiteSettings } from "@/lib/admin-store";
+import { saveOrder, getSettings, updateOrderUtr, SiteSettings, buildOrderWhatsAppUrl, Order } from "@/lib/admin-store";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
@@ -43,8 +43,8 @@ export default function CheckoutPage() {
     const newOrderId = generateOrderId();
     setOrderId(newOrderId);
 
-    // Save order with "awaiting_verification" status
-    saveOrder({
+    // Build the full order object
+    const newOrder: Order = {
       id: newOrderId,
       items: items.map((item) => ({
         productId: item.product.id,
@@ -69,11 +69,20 @@ export default function CheckoutPage() {
       status: "awaiting_verification",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
+    };
+
+    // Save order (syncs to Supabase + localStorage fallback)
+    saveOrder(newOrder);
 
     setIsSubmitted(true);
     clearCart();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Auto-open WhatsApp with full order details pre-filled
+    setTimeout(() => {
+      const waUrl = buildOrderWhatsAppUrl(newOrder, settings ?? undefined);
+      window.open(waUrl, '_blank');
+    }, 800);
   };
 
   const handleUtrSubmit = (e: React.FormEvent) => {
@@ -86,8 +95,8 @@ export default function CheckoutPage() {
 
 
   const openWhatsApp = () => {
-    const msg = `Namaste Ambika Handloom,\n\nI have made the payment for my Order *${orderId}*.\nHere is my payment screenshot.`;
-    const phone = settings?.contactPhone?.replace(/\D/g, '') || "919876543210";
+    const phone = (settings?.contactWhatsapp || settings?.contactPhone || "+919876543210").replace(/\D/g, '');
+    const msg = `Namaste Ambika Handloom 🙏\n\nI have made the payment for my Order *${orderId}*.\nPlease find the payment screenshot attached.\n\nThank you!`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
