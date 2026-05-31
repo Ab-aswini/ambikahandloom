@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +10,21 @@ import { products } from "@/lib/products";
 
 export default function HomePage() {
   const featuredProducts = products.slice(0, 3);
+
+  // Artisan live counter — realistic random number
+  const [artisanCount, setArtisanCount] = useState(0);
+  useEffect(() => {
+    // Generate a realistic number (2-6 artisans)
+    const count = Math.floor(Math.random() * 5) + 2;
+    setArtisanCount(count);
+
+    // Slowly change every 30-60 seconds for realism
+    const interval = setInterval(() => {
+      setArtisanCount(Math.floor(Math.random() * 5) + 2);
+    }, 30000 + Math.random() * 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Parallax refs
   const heroRef = useRef<HTMLElement>(null);
@@ -164,6 +179,21 @@ export default function HomePage() {
                 <p className="font-serif text-lg">45–60 Days</p>
                 <p className="text-xs text-obsidian/50">Per Masterpiece</p>
               </motion.div>
+
+              {/* Artisan Live Counter Badge */}
+              {artisanCount > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.5 }}
+                  className="absolute top-8 left-0 md:left-auto md:right-0 hidden md:block"
+                >
+                  <div className="artisan-live-badge">
+                    <span className="live-dot" />
+                    <span>{artisanCount} artisans weaving right now</span>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </div>
         </div>

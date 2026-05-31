@@ -1,33 +1,56 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Menu, X, Package } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
+import { ShoppingBag, Menu, X } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { scrollY } = useScroll();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // ── Smart auto-hide: hide on scroll down, show on scroll up ──
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    setIsScrolled(latest > 50);
 
-  // Close mobile menu on route change
+    // Don't hide when mobile menu is open
+    if (isMobileMenuOpen) return;
+
+    if (latest > 300 && latest > previous) {
+      setIsHidden(true);
+    } else {
+      setIsHidden(false);
+    }
+  });
+
+  // ── Lock body scroll when mobile menu is open ──
   useEffect(() => {
     if (isMobileMenuOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsMobileMenuOpen(false);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-  }, [pathname, isMobileMenuOpen]);
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
+  // Close mobile menu on route change
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
+
+  useEffect(() => {
+    closeMobileMenu();
+  }, [pathname, searchParams, closeMobileMenu]);
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -37,11 +60,26 @@ export default function Navbar() {
     { href: "/track", label: "Track Order" },
   ];
 
+  // ── Fixed isActive: properly matches query params for catalog sections ──
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
-    // match exact for home, prefix for others (strip query params)
-    const hrefBase = href.split("?")[0];
-    if (hrefBase === "/catalog") return pathname.startsWith("/catalog");
+
+    const [hrefBase, hrefQuery] = href.split("?");
+
+    // For catalog links — match both path and section param
+    if (hrefBase === "/catalog" && hrefQuery) {
+      const hrefParams = new URLSearchParams(hrefQuery);
+      const hrefSection = hrefParams.get("section");
+      const currentSection = searchParams.get("section");
+
+      // On catalog page, match the specific section
+      if (pathname === "/catalog" || pathname.startsWith("/catalog/")) {
+        return currentSection === hrefSection;
+      }
+      return false;
+    }
+
+    // For other links — prefix match
     return pathname.startsWith(hrefBase);
   };
 
@@ -49,10 +87,12 @@ export default function Navbar() {
     <>
       <motion.nav
         initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+        animate={{ y: isHidden ? -100 : 0 }}
+        transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          isScrolled ? "glass-effect shadow-sm" : "bg-transparent"
+          isScrolled
+            ? "glass-effect shadow-sm"
+            : "bg-transparent"
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-6 md:px-12">
@@ -99,15 +139,6 @@ export default function Navbar() {
 
             {/* Right Actions */}
             <div className="flex items-center gap-4">
-              <Link
-                href="/track"
-                className="hidden md:flex items-center gap-2 text-sm font-sans tracking-wide text-obsidian/70 hover:text-obsidian transition-colors duration-300"
-                title="Track Order"
-                aria-label="Track Order"
-              >
-                <Package size={16} />
-              </Link>
-
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative magnetic-btn p-2 group"
@@ -166,7 +197,7 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu — Staggered Cascade */}
+      {/* ═══ Mobile Menu — Frosted Glass with Staggered Cascade ═══ */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -174,31 +205,45 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-cream pt-24"
+            className="fixed inset-0 z-40 mobile-menu-frosted pt-24"
           >
-            <div className="flex flex-col items-center gap-2 py-12">
+            {/* Decorative golden thread line */}
+            <motion.div
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: 1 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
+              className="absolute left-8 top-28 bottom-8 w-px bg-gradient-to-b from-crimson-muted/40 via-crimson-muted/20 to-transparent origin-top"
+            />
+
+            <div className="flex flex-col items-start gap-1 py-12 px-12">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.href}
-                  initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -20, filter: "blur(5px)" }}
+                  initial={{ opacity: 0, x: -30, filter: "blur(10px)" }}
+                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, x: 20, filter: "blur(5px)" }}
                   transition={{
-                    duration: 0.4,
+                    duration: 0.5,
                     delay: i * 0.08,
                     ease: [0.23, 1, 0.32, 1],
                   }}
                 >
                   <Link
                     href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block font-serif text-4xl tracking-tight py-3 transition-colors duration-300 ${
+                    onClick={closeMobileMenu}
+                    className={`block font-serif text-4xl sm:text-5xl tracking-tight py-3 transition-colors duration-300 ${
                       isActive(link.href)
                         ? "text-crimson-muted"
                         : "text-obsidian hover:text-crimson-muted"
                     }`}
                   >
                     {link.label}
+                    {isActive(link.href) && (
+                      <motion.span
+                        layoutId="mobile-active-dot"
+                        className="inline-block w-2 h-2 bg-crimson-muted rounded-full ml-3 align-middle"
+                      />
+                    )}
                   </Link>
                 </motion.div>
               ))}
@@ -207,19 +252,19 @@ export default function Navbar() {
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="w-16 h-px bg-obsidian/10 my-4"
+                transition={{ duration: 0.5, delay: 0.35 }}
+                className="w-20 h-px bg-obsidian/10 my-6 origin-left"
               />
 
-              {/* Mobile quick action */}
+              {/* Mobile Cart Action */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.4 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.45 }}
               >
                 <button
                   onClick={() => {
-                    setIsMobileMenuOpen(false);
+                    closeMobileMenu();
                     setIsCartOpen(true);
                   }}
                   className="flex items-center gap-3 text-sm tracking-[0.12em] uppercase text-obsidian/50 hover:text-obsidian transition-colors"
@@ -232,6 +277,18 @@ export default function Navbar() {
                     </span>
                   )}
                 </button>
+              </motion.div>
+
+              {/* Artisan Badge in Mobile Menu */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.55 }}
+                className="mt-auto pt-12"
+              >
+                <p className="text-[10px] tracking-[0.2em] uppercase text-obsidian/30">
+                  Handwoven in Odisha, India
+                </p>
               </motion.div>
             </div>
           </motion.div>

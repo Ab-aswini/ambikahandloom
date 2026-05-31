@@ -351,3 +351,146 @@ textarea:focus {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* ===== FROSTED MOBILE MENU ===== */
+.mobile-menu-frosted {
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  background: rgba(252, 252, 250, 0.88);
+}
+
+/* ===== GOLDEN CURSOR TRAIL ===== */
+.cursor-dot {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #C4A265, #8B6914);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  mix-blend-mode: multiply;
+}
+
+.cursor-dot.visible {
+  opacity: 0.7;
+}
+
+.cursor-ring {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9997;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(196, 162, 101, 0.25);
+  opacity: 0;
+  transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+  mix-blend-mode: multiply;
+}
+
+.cursor-ring.visible {
+  opacity: 1;
+}
+
+.cursor-ring.hovering {
+  width: 48px;
+  height: 48px;
+  border-color: rgba(139, 38, 62, 0.3);
+}
+
+/* ===== BACK TO TOP BUTTON ===== */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 40;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-obsidian);
+  color: var(--color-cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.back-to-top:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  background: var(--color-indigo-deep);
+}
+
+.back-to-top svg {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.back-to-top:hover svg {
+  transform: translateY(-2px);
+}
+
+/* ===== ARTISAN LIVE BADGE ===== */
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+
+.artisan-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: rgba(252, 252, 250, 0.7);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(209, 201, 188, 0.4);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-obsidian);
+  opacity: 0.8;
+}
+
+.artisan-live-badge .live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: livePulse 2s ease-in-out infinite;
+}
+
+/* ===== PAGE TRANSITION SHIMMER ===== */
+@keyframes silkWave {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.silk-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.silk-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(196, 162, 101, 0.08),
+    transparent
+  );
+  animation: silkWave 2s ease-in-out infinite;
+}
+
