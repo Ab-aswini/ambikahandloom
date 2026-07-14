@@ -1,12 +1,19 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/checkout/success", "/admin/"],
+      disallow: [
+        "/admin",
+        "/admin/",
+        "/checkout",
+        "/track",
+      ],
     },
-    sitemap: "https://ambikahandloom.in/sitemap.xml",
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

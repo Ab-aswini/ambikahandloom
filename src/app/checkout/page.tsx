@@ -37,6 +37,12 @@ export default function CheckoutPage() {
   const advanceAmount = Math.round(totalPrice * 0.2);
   const payableAmount = paymentType === "full" ? totalPrice : advanceAmount;
 
+  // ─── Form Validation ───
+  const isValidPhone = /^[6-9]\d{9}$/.test(formData.phone.replace(/\s/g, ""));
+  const isValidPincode = /^\d{6}$/.test(formData.pincode.trim());
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim());
+  const isFormValid = formData.fullName.trim().length >= 2 && isValidEmail && isValidPhone && formData.address.trim().length >= 5 && formData.city.trim().length >= 2 && formData.state.trim().length >= 2 && isValidPincode;
+
   const generateOrderId = () => {
     const ts = Date.now().toString(36).toUpperCase();
     const r = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -258,9 +264,15 @@ export default function CheckoutPage() {
               <div>
                 <h3 className="text-xs tracking-[0.2em] uppercase text-obsidian/40 mb-4">Contact Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2"><input type="text" required value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} placeholder="Full Name" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" /></div>
-                  <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email Address" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" />
-                  <input type="tel" required value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="Phone Number" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" />
+                  <div className="md:col-span-2"><input type="text" required minLength={2} value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} placeholder="Full Name" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" /></div>
+                  <div>
+                    <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email Address" className={`w-full px-4 py-3.5 bg-warm-100 border rounded-xl text-sm placeholder:text-obsidian/30 ${formData.email && !isValidEmail ? 'border-rose-300' : 'border-warm-200'}`} />
+                    {formData.email && !isValidEmail && <p className="text-[10px] text-rose-500 mt-1 pl-1">Enter a valid email address</p>}
+                  </div>
+                  <div>
+                    <input type="tel" required pattern="[6-9][0-9]{9}" maxLength={10} value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })} placeholder="10-digit Mobile Number" className={`w-full px-4 py-3.5 bg-warm-100 border rounded-xl text-sm placeholder:text-obsidian/30 ${formData.phone && !isValidPhone ? 'border-rose-300' : 'border-warm-200'}`} />
+                    {formData.phone && !isValidPhone && <p className="text-[10px] text-rose-500 mt-1 pl-1">Enter a valid 10-digit Indian mobile number</p>}
+                  </div>
                 </div>
               </div>
 
@@ -270,7 +282,10 @@ export default function CheckoutPage() {
                   <div className="md:col-span-2"><textarea required value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder="Full Address" rows={3} className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30 resize-none" /></div>
                   <input type="text" required value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} placeholder="City" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" />
                   <input type="text" required value={formData.state} onChange={(e) => setFormData({ ...formData, state: e.target.value })} placeholder="State" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" />
-                  <input type="text" required value={formData.pincode} onChange={(e) => setFormData({ ...formData, pincode: e.target.value })} placeholder="PIN Code" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" />
+                  <div>
+                    <input type="text" required pattern="\d{6}" maxLength={6} value={formData.pincode} onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) })} placeholder="6-digit PIN Code" className={`w-full px-4 py-3.5 bg-warm-100 border rounded-xl text-sm placeholder:text-obsidian/30 ${formData.pincode && !isValidPincode ? 'border-rose-300' : 'border-warm-200'}`} />
+                    {formData.pincode && !isValidPincode && <p className="text-[10px] text-rose-500 mt-1 pl-1">Enter a valid 6-digit PIN code</p>}
+                  </div>
                 </div>
               </div>
 
@@ -311,7 +326,7 @@ export default function CheckoutPage() {
                 </AnimatePresence>
               </div>
 
-              <motion.button type="submit" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} className="w-full bg-obsidian text-cream py-4 px-6 text-sm tracking-[0.12em] uppercase font-medium hover:bg-indigo-deep transition-colors duration-500 flex items-center justify-center gap-3 rounded-xl shadow-lg shadow-obsidian/10">
+              <motion.button type="submit" disabled={!isFormValid} whileHover={isFormValid ? { scale: 1.01 } : {}} whileTap={isFormValid ? { scale: 0.99 } : {}} className={`w-full py-4 px-6 text-sm tracking-[0.12em] uppercase font-medium flex items-center justify-center gap-3 rounded-xl shadow-lg shadow-obsidian/10 transition-colors duration-500 ${isFormValid ? 'bg-obsidian text-cream hover:bg-indigo-deep cursor-pointer' : 'bg-obsidian/30 text-cream/50 cursor-not-allowed'}`}>
                 <Lock size={14} />Proceed to Payment
               </motion.button>
               <p className="text-center text-[10px] text-obsidian/40 uppercase tracking-wider">Step 1 of 2 — No payment required yet</p>

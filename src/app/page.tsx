@@ -4,12 +4,21 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Shield, Truck, Gem, Heart } from "lucide-react";
+import { ArrowRight, Shield, Truck, Gem, Sparkles } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/lib/products";
+import { getSettings, SiteSettings } from "@/lib/admin-store";
 
 export default function HomePage() {
   const featuredProducts = products.slice(0, 3);
+  const sareeProducts = products.filter((p) => p.section === "sarees");
+
+  // Load promotion settings from admin store
+  const [promoSettings, setPromoSettings] = useState<SiteSettings | null>(null);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPromoSettings(getSettings());
+  }, []);
 
   // Artisan live counter — realistic random number
   const [artisanCount, setArtisanCount] = useState(0);
@@ -68,17 +77,19 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 items-center min-h-screen pt-24 pb-16">
             {/* Text Content */}
             <motion.div style={{ y: heroTextY, opacity: heroOpacity }} className="lg:col-span-5 space-y-8 z-10">
-              {/* Mother's Day Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <span className="inline-flex items-center gap-2 px-4 py-2 bg-crimson-muted/10 border border-crimson-muted/20 rounded-full text-crimson-muted text-xs tracking-[0.15em] uppercase font-medium">
-                  <Heart size={12} className="fill-crimson-muted" />
-                  Mother&apos;s Day Special
-                </span>
-              </motion.div>
+              {/* Dynamic Promotion Badge */}
+              {promoSettings?.promotionEnabled && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-crimson-muted/10 border border-crimson-muted/20 rounded-full text-crimson-muted text-xs tracking-[0.15em] uppercase font-medium">
+                    <Sparkles size={12} />
+                    {promoSettings.promotionBadge}
+                  </span>
+                </motion.div>
+              )}
 
               <motion.h1
                 initial={{ opacity: 0, y: 40 }}
@@ -241,73 +252,56 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===== MOTHER'S DAY SECTION ===== */}
-      <section className="py-20 md:py-32 bg-gradient-to-b from-cream to-warm-100/30">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <span className="inline-flex items-center gap-2 text-crimson-muted text-xs tracking-[0.2em] uppercase font-medium mb-6">
-              <Heart size={14} className="fill-crimson-muted" />
-              A Gift She&apos;ll Treasure Forever
-              <Heart size={14} className="fill-crimson-muted" />
-            </span>
-            <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl tracking-tight leading-[0.95] mb-6">
-              This Mother&apos;s Day,
-              <br />
-              <span className="text-crimson-muted">Gift Heritage</span>
-            </h2>
-            <p className="text-sm md:text-base leading-relaxed text-obsidian/60">
-              Every Sambalpuri Ikat saree carries centuries of tradition, woven
-              with the love and skill of master artisans. Gift your mother a
-              masterpiece that tells a story — a thread-by-thread testament to
-              timeless beauty and enduring love.
-            </p>
-          </motion.div>
+      {/* ===== DYNAMIC PROMOTION SECTION (Admin-Configurable) ===== */}
+      {promoSettings?.promotionEnabled && (
+        <section className="py-20 md:py-32 bg-gradient-to-b from-cream to-warm-100/30">
+          <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center max-w-3xl mx-auto mb-16"
+            >
+              <span className="inline-flex items-center gap-2 text-crimson-muted text-xs tracking-[0.2em] uppercase font-medium mb-6">
+                <span>{promoSettings.promotionEmoji}</span>
+                {promoSettings.promotionBadge}
+                <span>{promoSettings.promotionEmoji}</span>
+              </span>
+              <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl tracking-tight leading-[0.95] mb-6">
+                {promoSettings.promotionTitle}
+              </h2>
+              <p className="text-sm md:text-base leading-relaxed text-obsidian/60">
+                {promoSettings.promotionSubtitle}
+              </p>
+            </motion.div>
 
-          {/* Gift Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {[
-              {
-                emoji: "🎁",
-                title: "Premium Gift Packaging",
-                desc: "Every saree arrives in an exquisite handcrafted box with a personalized note for your mother.",
-              },
-              {
-                emoji: "✨",
-                title: "Certificate of Authenticity",
-                desc: "Each masterpiece comes with a signed certificate from the artisan who wove it with devotion.",
-              },
-              {
-                emoji: "💌",
-                title: "Personal Message Card",
-                desc: "Add a heartfelt message on our handmade cotton rag paper card, tucked inside the gift box.",
-              },
-            ].map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.15 }}
-                className="text-center p-8 rounded-2xl bg-cream border border-warm-200 hover:border-crimson-muted/30 transition-colors duration-500 group"
-              >
-                <span className="text-4xl mb-4 block">{feature.emoji}</span>
-                <h3 className="font-serif text-xl tracking-tight mb-3 group-hover:text-crimson-muted transition-colors duration-300">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-obsidian/50 leading-relaxed">
-                  {feature.desc}
-                </p>
-              </motion.div>
-            ))}
+            {/* Promotion Feature Cards */}
+            {promoSettings.promotionFeatures.length > 0 && (
+              <div className={`grid grid-cols-1 md:grid-cols-${Math.min(promoSettings.promotionFeatures.length, 3)} gap-8 md:gap-12`}>
+                {promoSettings.promotionFeatures.map((feature, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: i * 0.15 }}
+                    className="text-center p-8 rounded-2xl bg-cream border border-warm-200 hover:border-crimson-muted/30 transition-colors duration-500 group"
+                  >
+                    <span className="text-4xl mb-4 block">{feature.emoji}</span>
+                    <h3 className="font-serif text-xl tracking-tight mb-3 group-hover:text-crimson-muted transition-colors duration-300">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-obsidian/50 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ===== SCROLLING MARQUEE ===== */}
       <section className="py-5 bg-obsidian overflow-hidden">
@@ -516,7 +510,7 @@ export default function HomePage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-warm-200">
-                {products.map((product) => (
+                {sareeProducts.map((product) => (
                   <tr key={product.id} className="hover:bg-warm-100/50 transition-colors duration-200">
                     <td className="px-6 py-4 font-serif text-base font-medium text-indigo-deep">{product.name}</td>
                     <td className="px-6 py-4 text-xs font-semibold tracking-wider uppercase">

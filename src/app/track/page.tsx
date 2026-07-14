@@ -29,18 +29,21 @@ export default function TrackPage() {
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputId.trim()) return;
+    const trimmedId = inputId.trim();
+    if (!trimmedId) return;
 
     setIsSearching(true);
     setNotFound(false);
 
     try {
-      const realOrder = await getOrderByIdAsync(inputId.toUpperCase());
+      const realOrder = await getOrderByIdAsync(trimmedId.toUpperCase());
       setIsSearching(false);
 
       if (realOrder) {
         const step = statusToStep[realOrder.status] ?? 0;
         const orderDate = new Date(realOrder.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" });
+        const updateDate = new Date(realOrder.updatedAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" });
+        
         setOrderStatus({
           orderId: realOrder.id,
           currentStep: step,
@@ -50,6 +53,7 @@ export default function TrackPage() {
             { title: "Order Confirmed", desc: `Payment verified. Order placed by ${realOrder.customer.fullName}.`, date: step >= 1 ? orderDate : "Pending", icon: <Package size={18} /> },
             { title: "Weaving / Processing", desc: "Your masterpiece is being prepared by our artisans.", date: step >= 2 ? "In progress" : "Pending", icon: <Scissors size={18} /> },
             { title: "Dispatched Securely", desc: "Carefully packaged and dispatched with premium insured shipping.", date: step >= 3 ? "In transit" : "Pending", icon: <Truck size={18} /> },
+            { title: "Delivered", desc: "Masterpiece successfully delivered to your doorstep.", date: step >= 4 ? updateDate : "Pending", icon: <CheckCircle2 size={18} /> },
           ],
         });
       } else {
@@ -117,8 +121,8 @@ export default function TrackPage() {
               {/* Timeline Steps */}
               <div className="space-y-0 relative z-10">
                 {orderStatus.steps.map((step, i) => {
-                  const isComplete = i < orderStatus.currentStep;
-                  const isCurrent = i === orderStatus.currentStep;
+                  const isComplete = i < orderStatus.currentStep || (orderStatus.currentStep === 4 && i === 4);
+                  const isCurrent = i === orderStatus.currentStep && orderStatus.currentStep !== 4;
                   const isPending = i > orderStatus.currentStep;
 
                   return (

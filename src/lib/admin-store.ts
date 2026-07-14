@@ -69,6 +69,13 @@ export interface Review {
   createdAt: string;
 }
 
+// ─── Promotion Types ────────────────────────────────────────
+export interface PromotionFeature {
+  emoji: string;
+  title: string;
+  description: string;
+}
+
 // ─── Site Settings Types ────────────────────────────────────
 export interface SiteSettings {
   paymentUpi: string;
@@ -81,7 +88,13 @@ export interface SiteSettings {
   contactAddress: string;
   heroTitle: string;
   heroSubtitle: string;
-  mothersDayEnabled: boolean;
+  // Dynamic promotion section (replaces hardcoded Mother's Day)
+  promotionEnabled: boolean;
+  promotionBadge: string;        // e.g. "Mother's Day Special", "Diwali Collection"
+  promotionTitle: string;        // Main heading
+  promotionSubtitle: string;     // Description paragraph
+  promotionEmoji: string;        // Badge icon emoji e.g. "❤️", "🪔", "🎄"
+  promotionFeatures: PromotionFeature[]; // 3 feature cards
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -96,7 +109,28 @@ const DEFAULT_SETTINGS: SiteSettings = {
   heroTitle: "Woven Heritage. Mastered for the Modern Era.",
   heroSubtitle:
     "Authentic Sambalpuri masterpieces sourced directly from master artisans. Uncompromising pure silk, mesmerizing Ikat mathematics, and absolute digital security.",
-  mothersDayEnabled: true,
+  promotionEnabled: true,
+  promotionBadge: "Mother's Day Special",
+  promotionTitle: "This Mother's Day, Gift Heritage",
+  promotionSubtitle: "Every Sambalpuri Ikat saree carries centuries of tradition, woven with the love and skill of master artisans. Gift your mother a masterpiece that tells a story — a thread-by-thread testament to timeless beauty and enduring love.",
+  promotionEmoji: "❤️",
+  promotionFeatures: [
+    {
+      emoji: "🎁",
+      title: "Premium Gift Packaging",
+      description: "Every saree arrives in an exquisite handcrafted box with a personalized note.",
+    },
+    {
+      emoji: "✨",
+      title: "Certificate of Authenticity",
+      description: "Each masterpiece comes with a signed certificate from the artisan who wove it.",
+    },
+    {
+      emoji: "💌",
+      title: "Personal Message Card",
+      description: "Add a heartfelt message on our handmade cotton rag paper card, tucked inside the gift box.",
+    },
+  ],
 };
 
 // ─── localStorage fallback helpers ─────────────────────────
@@ -633,7 +667,12 @@ export async function getSettingsAsync(): Promise<SiteSettings> {
       contactAddress: data.contact_address,
       heroTitle: data.hero_title,
       heroSubtitle: data.hero_subtitle,
-      mothersDayEnabled: data.mothers_day_enabled,
+      promotionEnabled: data.promotion_enabled ?? data.mothers_day_enabled ?? true,
+      promotionBadge: data.promotion_badge ?? DEFAULT_SETTINGS.promotionBadge,
+      promotionTitle: data.promotion_title ?? DEFAULT_SETTINGS.promotionTitle,
+      promotionSubtitle: data.promotion_subtitle ?? DEFAULT_SETTINGS.promotionSubtitle,
+      promotionEmoji: data.promotion_emoji ?? DEFAULT_SETTINGS.promotionEmoji,
+      promotionFeatures: data.promotion_features ?? DEFAULT_SETTINGS.promotionFeatures,
     };
   }
   return lsGet<SiteSettings>(KEYS.SETTINGS, DEFAULT_SETTINGS);
@@ -657,7 +696,12 @@ export async function saveSettingsAsync(settings: SiteSettings): Promise<void> {
       contact_address: settings.contactAddress,
       hero_title: settings.heroTitle,
       hero_subtitle: settings.heroSubtitle,
-      mothers_day_enabled: settings.mothersDayEnabled,
+      promotion_enabled: settings.promotionEnabled,
+      promotion_badge: settings.promotionBadge,
+      promotion_title: settings.promotionTitle,
+      promotion_subtitle: settings.promotionSubtitle,
+      promotion_emoji: settings.promotionEmoji,
+      promotion_features: settings.promotionFeatures,
       updated_at: new Date().toISOString(),
     });
     if (error) console.error("Supabase saveSettings error:", error);

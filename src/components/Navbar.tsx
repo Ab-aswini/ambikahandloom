@@ -70,7 +70,7 @@ export default function Navbar() {
     if (hrefBase === "/catalog" && hrefQuery) {
       const hrefParams = new URLSearchParams(hrefQuery);
       const hrefSection = hrefParams.get("section");
-      const currentSection = searchParams.get("section");
+      const currentSection = searchParams.get("section") || "sarees"; // Fallback to sarees
 
       // On catalog page, match the specific section
       if (pathname === "/catalog" || pathname.startsWith("/catalog/")) {

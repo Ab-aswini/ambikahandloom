@@ -22,6 +22,20 @@ function CatalogContent() {
   const [gridMode, setGridMode] = useState<GridMode>("grid3");
   const [isClient, setIsClient] = useState(false);
 
+  // Sync state when URL params change (e.g. clicking top header links)
+  useEffect(() => {
+    const sectParam = searchParams.get("section");
+    if (sectParam) {
+      setActiveSection(sectParam);
+    }
+    const catParam = searchParams.get("category");
+    if (catParam) {
+      setActiveCategory(catParam);
+    } else {
+      setActiveCategory("all");
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     setIsClient(true);
     const saved = localStorage.getItem("ah-catalog-grid");
@@ -40,6 +54,25 @@ function CatalogContent() {
   const handleSectionChange = (sectionId: string) => {
     setActiveSection(sectionId);
     setActiveCategory("all");
+
+    // Sync changes back to URL parameters
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("section", sectionId);
+      url.searchParams.set("category", "all");
+      window.history.pushState(null, "", url.pathname + url.search);
+    }
+  };
+
+  const handleCategoryChange = (categoryId: string) => {
+    setActiveCategory(categoryId);
+
+    // Sync changes back to URL parameters
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("category", categoryId);
+      window.history.pushState(null, "", url.pathname + url.search);
+    }
   };
 
   const currentCategories = categoryBySections[activeSection] || [];
@@ -135,7 +168,7 @@ function CatalogContent() {
             {currentCategories.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
+                onClick={() => handleCategoryChange(cat.id)}
                 className={`filter-pill px-5 py-2.5 rounded-full text-xs tracking-[0.1em] uppercase font-medium border transition-all duration-300 ${
                   activeCategory === cat.id
                     ? "bg-obsidian text-cream border-obsidian"
