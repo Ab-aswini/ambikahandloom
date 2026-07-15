@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { products, Product } from "@/lib/products";
 import { supabase } from "@/lib/supabase";
 import ProductDetailClient from "./ProductDetailClient";
+import DynamicProductLoader from "./DynamicProductLoader";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -160,7 +160,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductDetailPage({ params }: Props) {
   const { id } = await params;
   const product = await findProduct(id);
-  if (!product) notFound();
+
+  // If product not found on server (Supabase not configured, not in static array),
+  // render a client-side component that will try localStorage (admin-added products)
+  if (!product) {
+    return <DynamicProductLoader productId={id} />;
+  }
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
