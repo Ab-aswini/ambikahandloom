@@ -73,9 +73,9 @@ export const metadata: Metadata = {
     siteName: "Ambika Handloom",
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
-        width: 800,
-        height: 800,
+        url: `${SITE_URL}/logo-og.png`,
+        width: 192,
+        height: 192,
         alt: "Ambika Handloom — Authentic Sambalpuri Ikat Silk Sarees from Odisha, India",
         type: "image/png",
       },
@@ -84,11 +84,11 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Ambika Handloom — Authentic Sambalpuri Ikat Sarees & Ladies Wear",
     description:
       "Buy authentic Sambalpuri Ikat silk sarees, ladies kurta sets, and handloom fabric directly from artisans of Odisha.",
-    images: [`${SITE_URL}/logo.png`],
+    images: [`${SITE_URL}/logo-og.png`],
   },
   robots: {
     index: true,
