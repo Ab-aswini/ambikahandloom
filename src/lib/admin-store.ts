@@ -559,51 +559,57 @@ export function getOrderById(id: string): Order | undefined {
 }
 
 export async function saveOrderAsync(order: Order): Promise<void> {
-  if (isSupabaseConfigured()) {
-    const { error } = await supabase!.from("orders").upsert({
-      id: order.id,
-      customer_name: order.customer.fullName,
-      customer_email: order.customer.email,
-      customer_phone: order.customer.phone,
-      customer_address: order.customer.address,
-      customer_city: order.customer.city,
-      customer_state: order.customer.state,
-      customer_pincode: order.customer.pincode,
-      is_gift: order.isGift,
-      gift_message: order.giftMessage,
-      total_price: order.totalPrice,
-      payment_type: order.paymentType,
-      payment_utr: order.paymentUtr ?? null,
-      admin_note: order.adminNote ?? null,
-      tracking_note: order.trackingNote ?? null,
-      status: order.status,
-      updated_at: new Date().toISOString(),
-    });
-    if (error) { console.error("Supabase saveOrder error:", error); return; }
-
-    // Insert order items (delete old first for upsert behaviour)
-    await supabase!.from("order_items").delete().eq("order_id", order.id);
-    if (order.items.length > 0) {
-      await supabase!.from("order_items").insert(
-        order.items.map((item) => ({
-          order_id: order.id,
-          product_id: item.productId,
-          product_name: item.productName,
-          product_image: item.productImage,
-          price: item.price,
-          quantity: item.quantity,
-        }))
-      );
-    }
-    return;
-  }
-  // localStorage fallback
+  // ALWAYS write to localStorage first — this is the guaranteed fallback
   const orders = getOrders();
   const idx = orders.findIndex((o) => o.id === order.id);
   const ts = new Date().toISOString();
   if (idx >= 0) orders[idx] = { ...order, updatedAt: ts };
   else orders.push({ ...order, updatedAt: ts });
   lsSet(KEYS.ORDERS, orders);
+
+  // Then try Supabase (if configured) — best-effort, won't block checkout
+  if (isSupabaseConfigured()) {
+    try {
+      const { error } = await supabase!.from("orders").upsert({
+        id: order.id,
+        customer_name: order.customer.fullName,
+        customer_email: order.customer.email,
+        customer_phone: order.customer.phone,
+        customer_address: order.customer.address,
+        customer_city: order.customer.city,
+        customer_state: order.customer.state,
+        customer_pincode: order.customer.pincode,
+        is_gift: order.isGift,
+        gift_message: order.giftMessage,
+        total_price: order.totalPrice,
+        payment_type: order.paymentType,
+        payment_utr: order.paymentUtr ?? null,
+        admin_note: order.adminNote ?? null,
+        tracking_note: order.trackingNote ?? null,
+        status: order.status,
+        updated_at: new Date().toISOString(),
+      });
+      if (error) { console.error("Supabase saveOrder error:", error); return; }
+
+      // Insert order items (delete old first for upsert behaviour)
+      await supabase!.from("order_items").delete().eq("order_id", order.id);
+      if (order.items.length > 0) {
+        await supabase!.from("order_items").insert(
+          order.items.map((item) => ({
+            order_id: order.id,
+            product_id: item.productId,
+            product_name: item.productName,
+            product_image: item.productImage,
+            price: item.price,
+            quantity: item.quantity,
+          }))
+        );
+      }
+    } catch (err) {
+      // Supabase failed — order is already saved to localStorage
+      console.error("Supabase order sync failed (order saved locally):", err);
+    }
+  }
 }
 
 export function saveOrder(order: Order): void {
