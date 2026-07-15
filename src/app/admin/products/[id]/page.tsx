@@ -648,23 +648,56 @@ export default function AdminProductEditor() {
 
             {/* Gallery Thumbnails */}
             {product.images && product.images.length > 0 && (
-              <div className="grid grid-cols-4 gap-2 mb-4">
-                {product.images.map((img, idx) => (
-                  <div key={idx} className="relative aspect-square rounded overflow-hidden group">
-                    <Image src={img} alt={`Product photo ${idx + 1}`} fill className="object-cover" />
-                    <button
-                      onClick={() => setProduct((prev) => ({
-                        ...prev,
-                        images: prev.images?.filter((_, i) => i !== idx) || []
-                      }))}
-                      className="absolute top-1 right-1 w-5 h-5 bg-red-500/80 hover:bg-red-500 text-white text-xs rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                      title="Remove image"
-                      aria-label={`Remove image ${idx + 1}`}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
+              <div className="mb-4">
+                <p className="text-[10px] text-white/30 mb-2">
+                  💡 Click any photo below to set it as the main display image.
+                </p>
+                <div className="grid grid-cols-4 gap-2">
+                  {product.images.map((img, idx) => {
+                    const isMain = product.image === img;
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => setProduct((prev) => ({ ...prev, image: img }))}
+                        className={`relative aspect-square rounded overflow-hidden cursor-pointer transition-all group ${
+                          isMain ? "ring-2 ring-emerald-500 ring-offset-2 ring-offset-[#0A0A0A] scale-95" : "hover:ring-1 hover:ring-white/30"
+                        }`}
+                        title="Set as main image"
+                      >
+                        <Image src={img} alt={`Product photo ${idx + 1}`} fill className="object-cover" />
+                        
+                        {isMain && (
+                          <div className="absolute bottom-0 inset-x-0 bg-emerald-500 text-white text-[9px] font-semibold text-center py-0.5 uppercase tracking-wider">
+                            Main
+                          </div>
+                        )}
+                        
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation(); // prevent setting as main image when deleting
+                            setProduct((prev) => {
+                              const newImages = prev.images?.filter((_, i) => i !== idx) || [];
+                              // If we are deleting the main image, fall back to the first available image or default placeholder
+                              const newMainImage = prev.image === img
+                                ? (newImages[0] || "/images/saree-hero-1.png")
+                                : prev.image;
+                              return {
+                                ...prev,
+                                image: newMainImage,
+                                images: newImages
+                              };
+                            });
+                          }}
+                          className="absolute top-1 right-1 w-5 h-5 bg-red-500/80 hover:bg-red-500 text-white text-xs rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          title="Remove image"
+                          aria-label={`Remove image ${idx + 1}`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
