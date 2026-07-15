@@ -19,7 +19,7 @@ import { Product, products as defaultProducts } from "@/lib/products";
 export type { Product };
 
 // ─── Detect if Supabase is configured ──────────────────────
-function isSupabaseConfigured(): boolean {
+export function isSupabaseConfigured(): boolean {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   return Boolean(supabase && url && url !== "https://your-project-id.supabase.co");
 }
@@ -947,4 +947,187 @@ Thank you for choosing Ambika Handloom 🙏`;
   const customerNumber = order.customer.phone.replace(/\D/g, "");
   const number = customerNumber.length === 10 ? `91${customerNumber}` : customerNumber;
   return `https://wa.me/${number}?text=${encodeURIComponent(msg)}`;
+}
+
+/**
+ * Synchronizes all products, settings, orders, and reviews stored in
+ * localStorage to Supabase once Supabase is configured.
+ */
+export async function syncLocalStorageToSupabase(): Promise<{ success: boolean; message: string }> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, message: "Supabase is not configured." };
+  }
+
+  try {
+    // 1. Sync Settings
+    const localSettings = lsGet<SiteSettings | null>(KEYS.SETTINGS, null);
+    if (localSettings) {
+      await supabase!.from("site_settings").upsert({
+        id: 1,
+        payment_upi: localSettings.paymentUpi,
+        payment_bank: localSettings.paymentBank,
+        payment_account_no: localSettings.paymentAccountNo,
+        payment_ifsc: localSettings.paymentIfsc,
+        contact_email: localSettings.contactEmail,
+        contact_phone: localSettings.contactPhone,
+        contact_whatsapp: localSettings.contactWhatsapp,
+        contact_address: localSettings.contactAddress,
+        hero_title: localSettings.heroTitle,
+        hero_subtitle: localSettings.heroSubtitle,
+        promotion_enabled: localSettings.promotionEnabled,
+        promotion_badge: localSettings.promotionBadge,
+        promotion_title: localSettings.promotionTitle,
+        promotion_subtitle: localSettings.promotionSubtitle,
+        promotion_emoji: localSettings.promotionEmoji,
+        promotion_features: localSettings.promotionFeatures,
+        updated_at: new Date().toISOString(),
+      });
+    }
+
+    // 2. Sync Products
+    const localProducts = lsGet<Product[]>(KEYS.PRODUCTS, []);
+    for (const p of localProducts) {
+      await supabase!.from("products").upsert({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        original_price: p.originalPrice ?? null,
+        image: p.image,
+        images: p.images ?? [],
+        category: p.category,
+        category_label: p.categoryLabel,
+        section: p.section,
+        section_label: p.sectionLabel,
+        weave_time: p.weaveTime,
+        artisan_origin: p.artisanOrigin,
+        thread_count: p.threadCount,
+        description: p.description,
+        details: p.details,
+        artisan_story: p.artisanStory ?? null,
+        care_instructions: p.careInstructions ?? [],
+        in_stock: p.inStock,
+        updated_at: new Date().toISOString(),
+      });
+    }
+
+    // 3. Sync Orders
+    const localOrders = lsGet<Order[]>(KEYS.ORDERS, []);
+    for (const o of localOrders) {
+      await supabase!.from("orders").upsert({
+        id: o.id,
+        customer_name: o.customer.fullName,
+        customer_email: o.customer.email,
+        customer_phone: o.customer.phone,
+        customer_address: o.customer.address,
+        customer_city: o.customer.city,
+        customer_state: o.customer.state,
+        customer_pincode: o.customer.pincode,
+        is_gift: o.isGift,
+        gift_message: o.giftMessage,
+        total_price: o.totalPrice,
+        payment_type: o.paymentType,
+        payment_utr: o.paymentUtr ?? null,
+        admin_note: o.adminNote ?? null,
+        tracking_note: o.trackingNote ?? null,
+        status: o.status,
+        updated_at: new Date().toISOString(),
+      });
+
+      // Insert items (delete first to avoid duplicate keys)
+      await supabase!.from("order_items").delete().eq("order_id", o.id);
+      if (o.items && o.items.length > 0) {
+        await supabase!.from("order_items").insert(
+          o.items.map((item) => ({
+            order_id: o.id,
+            product_id: item.productId,
+            product_name: item.productName,
+            product_image: item.productImage,
+            price: item.price,
+            quantity: item.quantity,
+          }))
+        );
+      }
+    }
+
+    // 4. Sync Reviews
+    const localReviews = lsGet<Review[]>(KEYS.REVIEWS, []);
+    for (const r of localReviews) {
+      await supabase!.from("reviews").upsert({
+        id: r.id,
+        product_id: r.productId,
+        customer_name: r.customerName,
+        rating: r.rating,
+        comment: r.comment,
+        image: r.image ?? null,
+        images: r.images ?? [],
+      });
+    }
+
+    return { success: true, message: "All local products, orders, settings, and reviews synced to Supabase successfully." };
+  } catch (err: any) {
+    console.error("LocalStorage to Supabase sync failed:", err);
+    return { success: false, message: `Sync failed: ${err.message || err}` };
+  }
+}
+
+/** Wipes all orders (both locally and from Supabase if configured) */
+export async function clearAllOrdersAsync(): Promise<{ success: boolean; message: string }> {
+  try {
+    lsSet(KEYS.ORDERS, []);
+
+    if (isSupabaseConfigured()) {
+      // Delete all order items and orders
+      await supabase!.from("order_items").delete().neq("product_id", "placeholder-to-delete-all");
+      const { error } = await supabase!.from("orders").delete().neq("id", "placeholder-to-delete-all");
+      if (error) throw error;
+    }
+    return { success: true, message: "All orders successfully cleared." };
+  } catch (err: any) {
+    console.error("Failed to clear orders:", err);
+    return { success: false, message: `Failed to clear orders: ${err.message || err}` };
+  }
+}
+
+/** Restores original 12 default products and clears custom ones */
+export async function resetProductsToDefaultAsync(): Promise<{ success: boolean; message: string }> {
+  try {
+    lsSet(KEYS.PRODUCTS, defaultProducts);
+    localStorage.removeItem(KEYS.PRODUCTS_SEEDED); // force re-seed on next request
+    
+    if (isSupabaseConfigured()) {
+      // 1. Delete all existing products in DB
+      const { error: deleteErr } = await supabase!.from("products").delete().neq("id", "placeholder-to-delete-all");
+      if (deleteErr) throw deleteErr;
+
+      // 2. Re-seed default products to DB
+      for (const p of defaultProducts) {
+        const { error: insertErr } = await supabase!.from("products").upsert({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          original_price: p.originalPrice ?? null,
+          image: p.image,
+          images: p.images ?? [],
+          category: p.category,
+          category_label: p.categoryLabel,
+          section: p.section,
+          section_label: p.sectionLabel,
+          weave_time: p.weaveTime,
+          artisan_origin: p.artisanOrigin,
+          thread_count: p.threadCount,
+          description: p.description,
+          details: p.details,
+          artisan_story: p.artisanStory ?? null,
+          care_instructions: p.careInstructions ?? [],
+          in_stock: p.inStock,
+          updated_at: new Date().toISOString(),
+        });
+        if (insertErr) throw insertErr;
+      }
+    }
+    return { success: true, message: "Products successfully reset to default weavers' catalog." };
+  } catch (err: any) {
+    console.error("Failed to reset products:", err);
+    return { success: false, message: `Failed to reset products: ${err.message || err}` };
+  }
 }

@@ -2,8 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Save, RotateCcw, Sparkles, Plus, Trash2 } from "lucide-react";
-import { getSettings, saveSettings, SiteSettings, PromotionFeature } from "@/lib/admin-store";
+import { Save, RotateCcw, Sparkles, Plus, Trash2, Database, RefreshCw } from "lucide-react";
+import {
+  getSettings,
+  saveSettings,
+  SiteSettings,
+  PromotionFeature,
+  isSupabaseConfigured,
+  syncLocalStorageToSupabase,
+  clearAllOrdersAsync,
+  resetProductsToDefaultAsync,
+} from "@/lib/admin-store";
 
 const inputClass = "w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/25 transition-colors";
 
@@ -11,10 +20,17 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [supabaseActive, setSupabaseActive] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [isClearingOrders, setIsClearingOrders] = useState(false);
+  const [isResettingProducts, setIsResettingProducts] = useState(false);
+  const [dangerMessage, setDangerMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSettings(getSettings());
+    setSupabaseActive(isSupabaseConfigured());
   }, []);
 
   const handleSave = () => {
@@ -30,6 +46,59 @@ export default function AdminSettingsPage() {
 
   const handleReset = () => {
     setSettings(getSettings());
+  };
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    setSyncMessage(null);
+    try {
+      const res = await syncLocalStorageToSupabase();
+      if (res.success) {
+        setSyncMessage({ type: "success", text: res.message });
+      } else {
+        setSyncMessage({ type: "error", text: res.message });
+      }
+    } catch (err: any) {
+      setSyncMessage({ type: "error", text: err.message || "An unexpected error occurred during sync." });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleClearOrders = async () => {
+    if (!confirm("Are you absolutely sure you want to delete all customer orders? This cannot be undone.")) return;
+    setIsClearingOrders(true);
+    setDangerMessage(null);
+    try {
+      const res = await clearAllOrdersAsync();
+      if (res.success) {
+        setDangerMessage({ type: "success", text: res.message });
+      } else {
+        setDangerMessage({ type: "error", text: res.message });
+      }
+    } catch (err: any) {
+      setDangerMessage({ type: "error", text: err.message || "Failed to clear orders." });
+    } finally {
+      setIsClearingOrders(false);
+    }
+  };
+
+  const handleResetProducts = async () => {
+    if (!confirm("Are you absolutely sure you want to reset products to defaults? All custom products (like Product 13) will be deleted.")) return;
+    setIsResettingProducts(true);
+    setDangerMessage(null);
+    try {
+      const res = await resetProductsToDefaultAsync();
+      if (res.success) {
+        setDangerMessage({ type: "success", text: res.message });
+      } else {
+        setDangerMessage({ type: "error", text: res.message });
+      }
+    } catch (err: any) {
+      setDangerMessage({ type: "error", text: err.message || "Failed to reset products." });
+    } finally {
+      setIsResettingProducts(false);
+    }
   };
 
   const updateFeature = (index: number, field: keyof PromotionFeature, value: string) => {
@@ -437,6 +506,121 @@ export default function AdminSettingsPage() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Database Sync */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="bg-white/[0.03] border border-white/5 rounded-xl p-6 space-y-4"
+        >
+          <h3 className="text-xs text-white/30 uppercase tracking-wider mb-2 flex items-center gap-2">
+            <Database size={14} /> Database Synchronization
+          </h3>
+          <p className="text-xs text-white/40 leading-relaxed">
+            Synchronize all settings, products (including custom added ones like product 13), customer orders, and reviews currently saved in your local browser storage directly with the remote Supabase database.
+          </p>
+
+          <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className={`w-2 h-2 rounded-full ${supabaseActive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                <span className="text-xs text-white/60">
+                  {supabaseActive ? 'Supabase is fully configured' : 'Supabase is running in local storage fallback'}
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={handleSync}
+              disabled={isSyncing || !supabaseActive}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-[#0A0A0A] disabled:bg-white/10 disabled:text-white/30 text-xs font-semibold rounded-lg hover:bg-white/95 transition-all"
+            >
+              {isSyncing ? (
+                <>
+                  <RefreshCw className="animate-spin" size={13} />
+                  Synchronizing...
+                </>
+              ) : (
+                <>
+                  <RefreshCw size={13} />
+                  Sync Local Data to Supabase
+                </>
+              )}
+            </button>
+          </div>
+
+          {syncMessage && (
+            <div className={`p-4 rounded-lg text-xs leading-relaxed border ${
+              syncMessage.type === "success" 
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" 
+                : "bg-rose-500/10 border-rose-500/20 text-rose-300"
+            }`}>
+              {syncMessage.text}
+            </div>
+          )}
+        </motion.div>
+
+        {/* Danger Zone */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-rose-950/10 border border-rose-500/10 rounded-xl p-6 space-y-4"
+        >
+          <h3 className="text-xs text-rose-400 font-medium uppercase tracking-wider mb-2 flex items-center gap-2">
+            ⚠️ Danger Zone
+          </h3>
+          <p className="text-xs text-white/40 leading-relaxed">
+            Perform database maintenance tasks. Use these options with caution when preparing the website for client launch.
+          </p>
+
+          <div className="pt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Clear Orders */}
+            <div className="bg-rose-950/5 border border-rose-500/5 rounded-lg p-4 flex flex-col justify-between gap-4">
+              <div>
+                <h4 className="text-xs font-semibold text-rose-300">Clear All Orders</h4>
+                <p className="text-[10px] text-white/30 mt-1 leading-relaxed">
+                  Permanently deletes all customer checkout orders, transaction references, and order status histories.
+                </p>
+              </div>
+              <button
+                onClick={handleClearOrders}
+                disabled={isClearingOrders}
+                className="w-full py-2 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-300 disabled:opacity-50 text-xs font-medium rounded-lg transition-colors"
+              >
+                {isClearingOrders ? "Clearing..." : "Delete All Orders"}
+              </button>
+            </div>
+
+            {/* Reset Products */}
+            <div className="bg-rose-950/5 border border-rose-500/5 rounded-lg p-4 flex flex-col justify-between gap-4">
+              <div>
+                <h4 className="text-xs font-semibold text-rose-300">Reset Products Catalog</h4>
+                <p className="text-[10px] text-white/30 mt-1 leading-relaxed">
+                  Removes all newly added custom products (such as test product 13) and resets the catalog to the 12 original seeded master weavers' products.
+                </p>
+              </div>
+              <button
+                onClick={handleResetProducts}
+                disabled={isResettingProducts}
+                className="w-full py-2 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-300 disabled:opacity-50 text-xs font-medium rounded-lg transition-colors"
+              >
+                {isResettingProducts ? "Resetting..." : "Reset to 12 Seed Products"}
+              </button>
+            </div>
+          </div>
+
+          {dangerMessage && (
+            <div className={`p-4 rounded-lg text-xs leading-relaxed border ${
+              dangerMessage.type === "success" 
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" 
+                : "bg-rose-500/10 border-rose-500/20 text-rose-300"
+            }`}>
+              {dangerMessage.text}
             </div>
           )}
         </motion.div>
