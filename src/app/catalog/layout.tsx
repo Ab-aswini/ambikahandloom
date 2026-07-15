@@ -1,17 +1,40 @@
 import type { Metadata } from "next";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://ambikahandloom.vercel.app");
+
+const title = "Collections — Authentic Sambalpuri Ikat Sarees & Ladies Wear | Ambika Handloom";
+const description = "Browse our curated collection of authentic Sambalpuri Ikat silk sarees, ladies kurta sets, dupattas, dress materials, and handloom cut-piece fabric. Handwoven by master artisans of Odisha. Free shipping across India.";
+
 export const metadata: Metadata = {
-  title: "Collection — Authentic Sambalpuri Ikat Sarees, Ladies Wear & Fabric",
-  description:
-    "Browse our curated collection of authentic Sambalpuri Ikat silk sarees, ladies kurta sets, dupattas, dress materials, and handloom cut-piece fabric. Handwoven by master artisans of Odisha. Free shipping across India.",
+  title,
+  description,
   alternates: {
-    canonical: "/catalog",
+    canonical: `${SITE_URL}/catalog`,
   },
   openGraph: {
-    title: "Collection — Authentic Sambalpuri Ikat | Ambika Handloom",
-    description:
-      "Explore handwoven Sambalpuri Ikat sarees, ladies wear, and cut pieces. Direct from Odisha artisans.",
-    url: "/catalog",
+    title,
+    description,
+    url: `${SITE_URL}/catalog`,
+    siteName: "Ambika Handloom Collection",
+    images: [
+      {
+        url: `${SITE_URL}/social-banner.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Ambika Handloom Collection Catalog Saree & Ladies Wear Banner",
+        type: "image/jpeg",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: [`${SITE_URL}/social-banner.jpg`],
   },
 };
 
