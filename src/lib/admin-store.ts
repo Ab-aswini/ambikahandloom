@@ -241,7 +241,7 @@ function rowToReview(row: any): Review {
   };
 }
 
-// ─── Image Compression (unchanged) ─────────────────────────
+// ─── Image Compression ──────────────────────────────────────
 export function compressImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -269,6 +269,99 @@ export function compressImage(file: File): Promise<string> {
     };
     reader.onerror = (err) => reject(err);
   });
+}
+
+/** Compress a File into a Blob (for Supabase Storage upload) */
+function compressImageToBlob(file: File): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const MAX_SIZE = 1200;
+        if (width > height) {
+          if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+        } else {
+          if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => (blob ? resolve(blob) : reject(new Error("Canvas toBlob failed"))),
+          "image/webp",
+          0.82
+        );
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+}
+
+/**
+ * Upload a product image to Supabase Storage (with progress callback).
+ * Falls back to base64 data URL when Supabase is not configured.
+ */
+export async function uploadProductImage(
+  file: File,
+  onProgress?: (percent: number) => void
+): Promise<string> {
+  onProgress?.(5); // started
+
+  if (isSupabaseConfigured()) {
+    try {
+      onProgress?.(15); // compressing
+      const blob = await compressImageToBlob(file);
+
+      onProgress?.(35); // uploading
+      const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.webp`;
+      const filePath = `products/${fileName}`;
+
+      const { error: uploadError } = await supabase!.storage
+        .from("product-images")
+        .upload(filePath, blob, {
+          contentType: "image/webp",
+          upsert: false,
+        });
+
+      onProgress?.(80); // uploaded
+
+      if (uploadError) {
+        console.error("Supabase image upload error:", uploadError);
+        // Fall back to base64
+        onProgress?.(90);
+        const base64 = await compressImage(file);
+        onProgress?.(100);
+        return base64;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase!.storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+      onProgress?.(100);
+      return urlData.publicUrl;
+    } catch (err) {
+      console.error("Image upload failed, falling back to base64:", err);
+      const base64 = await compressImage(file);
+      onProgress?.(100);
+      return base64;
+    }
+  }
+
+  // localStorage fallback: use base64
+  onProgress?.(30);
+  const base64 = await compressImage(file);
+  onProgress?.(100);
+  return base64;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -313,6 +406,12 @@ export function getProductById(id: string): Product | undefined {
 }
 
 export async function saveProductAsync(product: Product): Promise<void> {
+  // Always dual-write to localStorage so sync readers stay fresh
+  const lsProducts = getProducts();
+  const lsIdx = lsProducts.findIndex((p) => p.id === product.id);
+  if (lsIdx >= 0) lsProducts[lsIdx] = product; else lsProducts.push(product);
+  lsSet(KEYS.PRODUCTS, lsProducts);
+
   if (isSupabaseConfigured()) {
     const { error } = await supabase!.from("products").upsert({
       id: product.id,
@@ -323,6 +422,8 @@ export async function saveProductAsync(product: Product): Promise<void> {
       images: product.images ?? [],
       category: product.category,
       category_label: product.categoryLabel,
+      section: product.section,
+      section_label: product.sectionLabel,
       weave_time: product.weaveTime,
       artisan_origin: product.artisanOrigin,
       thread_count: product.threadCount,
@@ -333,32 +434,33 @@ export async function saveProductAsync(product: Product): Promise<void> {
       in_stock: product.inStock,
       updated_at: new Date().toISOString(),
     });
-    if (error) console.error("Supabase saveProduct error:", error);
-    return;
+    if (error) {
+      console.error("Supabase saveProduct error:", error);
+      throw new Error(`Failed to save product: ${error.message}`);
+    }
   }
-  // localStorage fallback
-  const products = getProducts();
-  const idx = products.findIndex((p) => p.id === product.id);
-  if (idx >= 0) products[idx] = product; else products.push(product);
-  lsSet(KEYS.PRODUCTS, products);
 }
 
 // Sync alias kept for backward compat
 export function saveProduct(product: Product): void {
-  saveProductAsync(product);
+  saveProductAsync(product).catch(console.error);
 }
 
 export async function deleteProductAsync(id: string): Promise<void> {
+  // Always remove from localStorage too
+  lsSet(KEYS.PRODUCTS, getProducts().filter((p) => p.id !== id));
+
   if (isSupabaseConfigured()) {
     const { error } = await supabase!.from("products").delete().eq("id", id);
-    if (error) console.error("Supabase deleteProduct error:", error);
-    return;
+    if (error) {
+      console.error("Supabase deleteProduct error:", error);
+      throw new Error(`Failed to delete product: ${error.message}`);
+    }
   }
-  lsSet(KEYS.PRODUCTS, getProducts().filter((p) => p.id !== id));
 }
 
 export function deleteProduct(id: string): void {
-  deleteProductAsync(id);
+  deleteProductAsync(id).catch(console.error);
 }
 
 export function reorderProducts(products: Product[]): void {

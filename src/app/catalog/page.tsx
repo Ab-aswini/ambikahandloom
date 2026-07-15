@@ -5,7 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Grid3X3, LayoutGrid, Rows3, MessageCircle } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-import { products, sections, categoryBySections, Product } from "@/lib/products";
+import { products as staticProducts, sections, categoryBySections, Product } from "@/lib/products";
+import { getProductsAsync } from "@/lib/admin-store";
 
 type GridMode = "grid3" | "grid2" | "list";
 
@@ -21,6 +22,8 @@ function CatalogContent() {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [gridMode, setGridMode] = useState<GridMode>("grid3");
   const [isClient, setIsClient] = useState(false);
+  const [products, setProducts] = useState<Product[]>(staticProducts);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Sync state when URL params change (e.g. clicking top header links)
   useEffect(() => {
@@ -36,12 +39,23 @@ function CatalogContent() {
     }
   }, [searchParams]);
 
+  // Load products dynamically from admin-store (Supabase + localStorage)
   useEffect(() => {
     setIsClient(true);
     const saved = localStorage.getItem("ah-catalog-grid");
     if (saved === "grid3" || saved === "grid2" || saved === "list") {
       setGridMode(saved);
     }
+    // Fetch products from Supabase/localStorage
+    getProductsAsync()
+      .then((fetched) => {
+        if (fetched.length > 0) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setProducts(fetched);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, []);
 
   const setGrid = (mode: GridMode) => {

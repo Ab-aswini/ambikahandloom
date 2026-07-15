@@ -4,28 +4,49 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Plus, Pencil, Trash2, Package } from "lucide-react";
+import { Plus, Pencil, Trash2, Package, Loader2 } from "lucide-react";
 import { Product } from "@/lib/products";
-import { getProducts, deleteProduct } from "@/lib/admin-store";
+import { getProductsAsync, deleteProductAsync } from "@/lib/admin-store";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true);
-    setProducts(getProducts());
+    getProductsAsync()
+      .then((fetched) => setProducts(fetched))
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const handleDelete = (id: string) => {
-    deleteProduct(id);
-    setProducts(getProducts());
-    setDeleteId(null);
+  const handleDelete = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      await deleteProductAsync(id);
+      const updated = await getProductsAsync();
+      setProducts(updated);
+    } catch (err) {
+      console.error("Delete failed:", err);
+    } finally {
+      setDeleteId(null);
+      setIsDeleting(false);
+    }
   };
 
   if (!isClient) return null;
+
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto flex items-center justify-center py-32">
+        <Loader2 className="animate-spin text-white/30" size={32} />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto">

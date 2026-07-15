@@ -6,19 +6,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Shield, Truck, Gem, Sparkles } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/lib/products";
-import { getSettings, SiteSettings } from "@/lib/admin-store";
+import { products as staticProducts, Product } from "@/lib/products";
+import { getSettings, getProductsAsync, SiteSettings } from "@/lib/admin-store";
 
 export default function HomePage() {
-  const featuredProducts = products.slice(0, 3);
-  const sareeProducts = products.filter((p) => p.section === "sarees");
+  const [allProducts, setAllProducts] = useState<Product[]>(staticProducts);
+  const featuredProducts = allProducts.slice(0, 3);
+  const sareeProducts = allProducts.filter((p) => p.section === "sarees");
 
-  // Load promotion settings from admin store
+  // Load promotion settings and products from admin store
   const [promoSettings, setPromoSettings] = useState<SiteSettings | null>(null);
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPromoSettings(getSettings());
+    // Load products dynamically (Supabase + localStorage)
+    getProductsAsync()
+      .then((fetched) => {
+        if (fetched.length > 0) setAllProducts(fetched);
+      })
+      .catch(console.error);
   }, []);
+
 
   // Artisan live counter — realistic random number
   const [artisanCount, setArtisanCount] = useState(0);

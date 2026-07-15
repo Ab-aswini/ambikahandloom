@@ -1,25 +1,85 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { products } from "@/lib/products";
+import { products, Product } from "@/lib/products";
+import { supabase } from "@/lib/supabase";
 import ProductDetailClient from "./ProductDetailClient";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
+// Allow admin-added products that aren't in the static array
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   return products.map((p) => ({ id: p.id }));
 }
 
+/** Look up a product: try static array first, then Supabase */
+async function findProduct(id: string): Promise<Product | null> {
+  // 1. Check static products first (fastest — SSG)
+  const staticProduct = products.find((p) => p.id === id);
+  if (staticProduct) return staticProduct;
+
+  // 2. Try Supabase for admin-added products
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (supabase && url && url !== "https://your-project-id.supabase.co") {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (!error && data) {
+      // Map DB row to Product shape
+      const rawSection = data.section as string | undefined;
+      let section: Product["section"] = "sarees";
+      if (rawSection === "ladies-wear" || rawSection === "cut-pieces") {
+        section = rawSection;
+      } else if (data.category?.startsWith("ladies-wear")) {
+        section = "ladies-wear";
+      } else if (data.category?.startsWith("cut-pieces")) {
+        section = "cut-pieces";
+      }
+      const sectionLabelMap: Record<Product["section"], string> = {
+        sarees: "Sarees", "ladies-wear": "Ladies Wear", "cut-pieces": "Cut Pieces",
+      };
+      return {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        originalPrice: data.original_price ?? undefined,
+        image: data.image,
+        images: data.images ?? [],
+        category: data.category,
+        categoryLabel: data.category_label,
+        section,
+        sectionLabel: data.section_label ?? sectionLabelMap[section],
+        weaveTime: data.weave_time,
+        artisanOrigin: data.artisan_origin,
+        threadCount: data.thread_count,
+        description: data.description,
+        details: data.details ?? [],
+        artisanStory: data.artisan_story ?? undefined,
+        careInstructions: data.care_instructions ?? [],
+        inStock: data.in_stock,
+        fabric: data.fabric ?? undefined,
+        length: data.length ?? undefined,
+      };
+    }
+  }
+
+  return null;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const product = products.find((p) => p.id === id);
+  const product = await findProduct(id);
   if (!product) return { title: "Product Not Found" };
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
   const productUrl = `${siteUrl}/catalog/${product.id}`;
-  const imageUrl = `${siteUrl}${product.image}`;
+  const imageUrl = product.image.startsWith("http") ? product.image : `${siteUrl}${product.image}`;
 
   const titleSection =
     product.section === "sarees"
@@ -29,7 +89,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : "Ikat Cut Piece Fabric";
 
   const title = `${product.name} | ${titleSection} | Ambika Handloom`;
-  const description = `${product.description} Handcrafted by artisans from ${product.artisanOrigin}. ${product.fabric}, ${product.length}. ₹${product.price.toLocaleString("en-IN")}. ${product.inStock ? "In Stock" : "Out of Stock"}. Free shipping across India.`;
+  const description = `${product.description} Handcrafted by artisans from ${product.artisanOrigin}. ${product.fabric || ""}, ${product.length || ""}. ₹${product.price.toLocaleString("en-IN")}. ${product.inStock ? "In Stock" : "Out of Stock"}. Free shipping across India.`;
 
   return {
     title,
@@ -58,15 +118,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: `${product.name} — ${product.categoryLabel} by Ambika Handloom. ${product.fabric}, handwoven by artisans from ${product.artisanOrigin}, Odisha.`,
+          alt: `${product.name} — ${product.categoryLabel} by Ambika Handloom. ${product.fabric || ""}, handwoven by artisans from ${product.artisanOrigin}, Odisha.`,
           type: "image/png",
         },
         // Additional product images for image SEO
         ...(product.images || []).slice(1).map((img) => ({
-          url: `${siteUrl}${img}`,
+          url: img.startsWith("http") ? img : `${siteUrl}${img}`,
           width: 800,
           height: 1000,
-          alt: `${product.name} detail — ${product.categoryLabel}, ${product.fabric} from ${product.artisanOrigin}`,
+          alt: `${product.name} detail — ${product.categoryLabel}, ${product.fabric || ""} from ${product.artisanOrigin}`,
           type: "image/png",
         })),
       ],
@@ -99,7 +159,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { id } = await params;
-  const product = products.find((p) => p.id === id);
+  const product = await findProduct(id);
   if (!product) notFound();
 
   const siteUrl =

@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Eye } from "lucide-react";
+import { ArrowLeft, Save, Eye, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Product } from "@/lib/products";
-import { getProductById, saveProduct, getProducts, Review, getReviewsByProduct, saveReview, deleteReview, compressImage } from "@/lib/admin-store";
+import { getProductByIdAsync, saveProductAsync, getProductsAsync, Review, getReviewsByProduct, saveReview, deleteReview, uploadProductImage } from "@/lib/admin-store";
 
 const emptyProduct: Product = {
   id: "",
@@ -44,6 +44,13 @@ const categoryOptions = [
   { value: "cut-pieces-blouse", label: "Blouse Piece", section: "cut-pieces", sectionLabel: "Cut Pieces" },
 ];
 
+// Image upload progress state
+interface UploadProgress {
+  fileName: string;
+  percent: number;
+  status: "uploading" | "done" | "error";
+}
+
 export default function AdminProductEditor() {
   const params = useParams();
   const router = useRouter();
@@ -54,45 +61,67 @@ export default function AdminProductEditor() {
   const [detailsText, setDetailsText] = useState("");
   const [careText, setCareText] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [isLoadingProduct, setIsLoadingProduct] = useState(true);
 
   // Reviews state
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReview, setNewReview] = useState<Partial<Review>>({ rating: 5 });
   const [isCompressingReview, setIsCompressingReview] = useState(false);
-  const [isCompressingProduct, setIsCompressingProduct] = useState(false);
+
+  // Image upload progress
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true);
-    if (!isNew) {
-      const found = getProductById(id);
-      if (found) {
-        setProduct(found);
-        setDetailsText(found.details.join("\n"));
-        setCareText((found.careInstructions || []).join("\n"));
-        setReviews(getReviewsByProduct(id));
+
+    const loadData = async () => {
+      try {
+        if (!isNew) {
+          const found = await getProductByIdAsync(id);
+          if (found) {
+            setProduct(found);
+            setDetailsText(found.details.join("\n"));
+            setCareText((found.careInstructions || []).join("\n"));
+            setReviews(getReviewsByProduct(id));
+          }
+        } else {
+          // Generate new ID
+          const allProducts = await getProductsAsync();
+          setProduct({
+            ...emptyProduct,
+            id: `AH-${String(allProducts.length + 1).padStart(3, "0")}`,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load product:", err);
+      } finally {
+        setIsLoadingProduct(false);
       }
-    } else {
-      // Generate new ID
-      const count = getProducts().length;
-      setProduct({
-        ...emptyProduct,
-        id: `AH-${String(count + 1).padStart(3, "0")}`,
-      });
-    }
+    };
+    loadData();
   }, [id, isNew]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
+    setSaveError(null);
 
     const selectedCatOpt = categoryOptions.find((c) => c.value === product.category);
     const categoryLabel = selectedCatOpt?.label || "Pure Silk";
     const section = (selectedCatOpt?.section || "sarees") as Product["section"];
     const sectionLabel = selectedCatOpt?.sectionLabel || "Sarees";
 
+    // Use first gallery image as the main image if no main image set
+    const mainImage = product.images && product.images.length > 0
+      ? product.images[0]
+      : product.image;
+
     const updatedProduct: Product = {
       ...product,
+      image: mainImage,
       categoryLabel,
       section,
       sectionLabel,
@@ -100,12 +129,15 @@ export default function AdminProductEditor() {
       careInstructions: careText.split("\n").filter((c) => c.trim()),
     };
 
-    saveProduct(updatedProduct);
-
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      await saveProductAsync(updatedProduct);
       router.push("/admin/products");
-    }, 500);
+    } catch (err) {
+      console.error("Save failed:", err);
+      setSaveError(err instanceof Error ? err.message : "Failed to save product");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReviewImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,15 +146,15 @@ export default function AdminProductEditor() {
 
     setIsCompressingReview(true);
     try {
-      const compressedImages: string[] = [];
+      const uploadedUrls: string[] = [];
       for (let i = 0; i < files.length; i++) {
-        const base64 = await compressImage(files[i]);
-        compressedImages.push(base64);
+        const url = await uploadProductImage(files[i]);
+        uploadedUrls.push(url);
       }
 
       setNewReview((prev) => ({ 
         ...prev, 
-        images: [...(prev.images || []), ...compressedImages] 
+        images: [...(prev.images || []), ...uploadedUrls] 
       }));
     } finally {
       setIsCompressingReview(false);
@@ -131,22 +163,64 @@ export default function AdminProductEditor() {
 
   const handleProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
 
-    setIsCompressingProduct(true);
+    setIsUploading(true);
+
+    // Initialize progress for each file
+    const initialProgress: UploadProgress[] = Array.from(files).map((f) => ({
+      fileName: f.name,
+      percent: 0,
+      status: "uploading" as const,
+    }));
+    setUploadProgress(initialProgress);
+
     try {
-      const compressedImages: string[] = [];
+      const uploadedUrls: string[] = [];
+
       for (let i = 0; i < files.length; i++) {
-        const base64 = await compressImage(files[i]);
-        compressedImages.push(base64);
+        const file = files[i];
+        try {
+          const url = await uploadProductImage(file, (percent) => {
+            setUploadProgress((prev) =>
+              prev.map((p, idx) =>
+                idx === i ? { ...p, percent, status: "uploading" } : p
+              )
+            );
+          });
+          uploadedUrls.push(url);
+          setUploadProgress((prev) =>
+            prev.map((p, idx) =>
+              idx === i ? { ...p, percent: 100, status: "done" } : p
+            )
+          );
+        } catch (err) {
+          console.error(`Upload failed for ${file.name}:`, err);
+          setUploadProgress((prev) =>
+            prev.map((p, idx) =>
+              idx === i ? { ...p, status: "error" } : p
+            )
+          );
+        }
       }
 
-      setProduct((prev) => ({
-        ...prev,
-        images: [...(prev.images || []), ...compressedImages]
-      }));
+      if (uploadedUrls.length > 0) {
+        setProduct((prev) => ({
+          ...prev,
+          images: [...(prev.images || []), ...uploadedUrls],
+          // Set main image to first uploaded if none exists
+          image: prev.image === "/images/saree-hero-1.png" && uploadedUrls[0]
+            ? uploadedUrls[0]
+            : prev.image,
+        }));
+      }
+
+      // Clear progress after a delay
+      setTimeout(() => setUploadProgress([]), 3000);
     } finally {
-      setIsCompressingProduct(false);
+      setIsUploading(false);
+      // Reset the file input
+      e.target.value = "";
     }
   };
 
@@ -174,6 +248,14 @@ export default function AdminProductEditor() {
   };
 
   if (!isClient) return null;
+
+  if (isLoadingProduct) {
+    return (
+      <div className="max-w-4xl mx-auto flex items-center justify-center py-32">
+        <Loader2 className="animate-spin text-white/30" size={32} />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -212,14 +294,29 @@ export default function AdminProductEditor() {
           )}
           <button
             onClick={handleSave}
-            disabled={isSaving || !product.name || !product.price}
+            disabled={isSaving || isUploading || !product.name || !product.price}
             className="flex items-center gap-2 px-4 py-2.5 bg-white text-[#0A0A0A] text-sm font-medium rounded-lg hover:bg-white/90 transition-colors disabled:opacity-50"
           >
-            <Save size={14} />
+            {isSaving ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <Save size={14} />
+            )}
             {isSaving ? "Saving..." : "Save Product"}
           </button>
         </div>
       </motion.div>
+
+      {/* Save Error Alert */}
+      {saveError && (
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
+          <AlertCircle size={16} className="text-red-400 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-sm text-red-400 font-medium">Failed to save product</p>
+            <p className="text-xs text-red-400/70 mt-1">{saveError}</p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
@@ -573,21 +670,60 @@ export default function AdminProductEditor() {
 
             <div>
               <label className="block text-xs text-white/40 mb-1.5">
-                Upload Additional Photos
+                Upload Product Photos
               </label>
               <input
                 type="file"
                 multiple
                 accept="image/*"
-                title="Upload additional product photos"
+                title="Upload product photos"
                 onChange={handleProductImageUpload}
-                disabled={isCompressingProduct}
+                disabled={isUploading}
                 className="w-full text-xs text-white/40 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-white/10 file:text-white hover:file:bg-white/20 disabled:opacity-50"
               />
-              {isCompressingProduct && (
-                <div className="flex items-center gap-2 text-xs text-amber-400 mt-2">
-                  <div className="w-3.5 h-3.5 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
-                  Compressing images...
+
+              {/* Upload Progress Bars */}
+              {uploadProgress.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {uploadProgress.map((up, idx) => (
+                    <div key={idx} className="p-2.5 bg-white/5 rounded-lg">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs text-white/60 truncate max-w-[180px]">
+                          {up.status === "done" ? (
+                            <span className="flex items-center gap-1 text-emerald-400">
+                              <CheckCircle2 size={12} />
+                              {up.fileName}
+                            </span>
+                          ) : up.status === "error" ? (
+                            <span className="flex items-center gap-1 text-red-400">
+                              <AlertCircle size={12} />
+                              {up.fileName}
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1">
+                              <Loader2 size={12} className="animate-spin text-blue-400" />
+                              {up.fileName}
+                            </span>
+                          )}
+                        </span>
+                        <span className="text-[10px] text-white/40 font-mono">
+                          {up.percent}%
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-300 ease-out ${
+                            up.status === "done"
+                              ? "bg-emerald-400"
+                              : up.status === "error"
+                              ? "bg-red-400"
+                              : "bg-blue-400"
+                          }`}
+                          style={{ width: `${up.percent}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

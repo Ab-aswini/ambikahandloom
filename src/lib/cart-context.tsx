@@ -10,10 +10,11 @@ export interface CartItem {
   quantity: number;
 }
 
-// Minimal shape stored in localStorage (no full product objects)
+// Stored shape in localStorage — includes full product data for admin-added products
 interface StoredCartItem {
   productId: string;
   quantity: number;
+  product?: Product; // full product data for items not in static array
 }
 
 interface CartContextType {
@@ -30,13 +31,18 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-/** Persist only product IDs + quantities to localStorage */
+/** Persist product IDs + quantities (+ full data for non-static products) */
 function persistCart(items: CartItem[]): void {
   if (typeof window === "undefined") return;
-  const stored: StoredCartItem[] = items.map((i) => ({
-    productId: i.product.id,
-    quantity: i.quantity,
-  }));
+  const stored: StoredCartItem[] = items.map((i) => {
+    const isStatic = products.some((p) => p.id === i.product.id);
+    return {
+      productId: i.product.id,
+      quantity: i.quantity,
+      // Store full product data only for admin-added (non-static) products
+      ...(!isStatic && { product: i.product }),
+    };
+  });
   try {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(stored));
   } catch {
@@ -53,7 +59,8 @@ function restoreCart(): CartItem[] {
     const stored: StoredCartItem[] = JSON.parse(raw);
     const restored: CartItem[] = [];
     for (const s of stored) {
-      const product = products.find((p) => p.id === s.productId);
+      // Try static array first, then fall back to stored product data
+      const product = products.find((p) => p.id === s.productId) || s.product;
       if (product && s.quantity > 0) {
         restored.push({ product, quantity: s.quantity });
       }

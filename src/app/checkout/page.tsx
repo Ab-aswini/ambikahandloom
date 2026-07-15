@@ -4,20 +4,22 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Shield, Lock, ArrowLeft, CheckCircle2, Gift, Send, FileText, Smartphone } from "lucide-react";
+import { Shield, Lock, ArrowLeft, CheckCircle2, Gift, Send, FileText, Smartphone, Loader2 } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { useToast } from "@/lib/toast-context";
-import { saveOrder, getSettings, updateOrderUtr, SiteSettings, buildOrderWhatsAppUrl, Order } from "@/lib/admin-store";
+import { saveOrderAsync, getSettingsAsync, updateOrderUtrAsync, SiteSettings, buildOrderWhatsAppUrl, Order } from "@/lib/admin-store";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const { showToast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [isGift, setIsGift] = useState(false);
   const [paymentType, setPaymentType] = useState<"full" | "advance">("full");
   const [utr, setUtr] = useState("");
   const [isUtrSubmitted, setIsUtrSubmitted] = useState(false);
+  const [isUtrSubmitting, setIsUtrSubmitting] = useState(false);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
 
   // Snapshot the order totals before clearing the cart
@@ -30,8 +32,10 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSettings(getSettings());
+    // Load settings asynchronously (gets Supabase data when configured)
+    getSettingsAsync()
+      .then((s) => setSettings(s))
+      .catch(console.error);
   }, []);
 
   const advanceAmount = Math.round(totalPrice * 0.2);
@@ -49,8 +53,10 @@ export default function CheckoutPage() {
     return `AH-${ts}-${r}`;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     const newOrderId = generateOrderId();
     setOrderId(newOrderId);
 
@@ -82,31 +88,46 @@ export default function CheckoutPage() {
       updatedAt: new Date().toISOString(),
     };
 
-    // Save order (syncs to Supabase + localStorage fallback)
-    saveOrder(newOrder);
+    try {
+      // Save order (async — properly awaits Supabase write)
+      await saveOrderAsync(newOrder);
 
-    // Snapshot totals BEFORE clearing the cart (fixes ₹0 display bug)
-    setSavedTotalPrice(totalPrice);
-    setSavedPayableAmount(payableAmount);
-    setSavedPaymentType(paymentType);
+      // Snapshot totals BEFORE clearing the cart (fixes ₹0 display bug)
+      setSavedTotalPrice(totalPrice);
+      setSavedPayableAmount(payableAmount);
+      setSavedPaymentType(paymentType);
 
-    setIsSubmitted(true);
-    clearCart();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+      setIsSubmitted(true);
+      clearCart();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Auto-open WhatsApp with full order details pre-filled
-    setTimeout(() => {
-      const waUrl = buildOrderWhatsAppUrl(newOrder, settings ?? undefined);
-      window.open(waUrl, '_blank');
-    }, 800);
+      // Auto-open WhatsApp with full order details pre-filled
+      setTimeout(() => {
+        const waUrl = buildOrderWhatsAppUrl(newOrder, settings ?? undefined);
+        window.open(waUrl, '_blank');
+      }, 800);
+    } catch (err) {
+      console.error("Order save failed:", err);
+      showToast("Failed to save order. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleUtrSubmit = (e: React.FormEvent) => {
+  const handleUtrSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!utr.trim()) return;
-    updateOrderUtr(orderId, utr);
-    setIsUtrSubmitted(true);
-    showToast("Payment details submitted for verification!");
+    setIsUtrSubmitting(true);
+    try {
+      await updateOrderUtrAsync(orderId, utr);
+      setIsUtrSubmitted(true);
+      showToast("Payment details submitted for verification!");
+    } catch (err) {
+      console.error("UTR submit failed:", err);
+      showToast("Failed to submit UTR. Please try again.");
+    } finally {
+      setIsUtrSubmitting(false);
+    }
   };
 
 
@@ -326,8 +347,9 @@ export default function CheckoutPage() {
                 </AnimatePresence>
               </div>
 
-              <motion.button type="submit" disabled={!isFormValid} whileHover={isFormValid ? { scale: 1.01 } : {}} whileTap={isFormValid ? { scale: 0.99 } : {}} className={`w-full py-4 px-6 text-sm tracking-[0.12em] uppercase font-medium flex items-center justify-center gap-3 rounded-xl shadow-lg shadow-obsidian/10 transition-colors duration-500 ${isFormValid ? 'bg-obsidian text-cream hover:bg-indigo-deep cursor-pointer' : 'bg-obsidian/30 text-cream/50 cursor-not-allowed'}`}>
-                <Lock size={14} />Proceed to Payment
+              <motion.button type="submit" disabled={!isFormValid || isSubmitting} whileHover={isFormValid && !isSubmitting ? { scale: 1.01 } : {}} whileTap={isFormValid && !isSubmitting ? { scale: 0.99 } : {}} className={`w-full py-4 px-6 text-sm tracking-[0.12em] uppercase font-medium flex items-center justify-center gap-3 rounded-xl shadow-lg shadow-obsidian/10 transition-colors duration-500 ${isFormValid && !isSubmitting ? 'bg-obsidian text-cream hover:bg-indigo-deep cursor-pointer' : 'bg-obsidian/30 text-cream/50 cursor-not-allowed'}`}>
+                {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} />}
+                {isSubmitting ? "Placing Order..." : "Proceed to Payment"}
               </motion.button>
               <p className="text-center text-[10px] text-obsidian/40 uppercase tracking-wider">Step 1 of 2 — No payment required yet</p>
             </form>
