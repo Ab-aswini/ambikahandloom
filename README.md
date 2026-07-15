@@ -63,10 +63,8 @@ Edit `.env.local` with your values:
 
 ### 3. Setup Database
 
-Run the SQL migrations in order via Supabase SQL Editor:
-1. `supabase/migrations/001_initial.sql` — Creates tables, RLS policies, seeds products
-2. `supabase/migrations/002_categories_expansion.sql` — Adds sections (sarees, ladies-wear, cut-pieces)
-3. `supabase/migrations/003_dynamic_promotions.sql` — Adds configurable promotion columns
+Run the SQL migration in Supabase SQL Editor:
+1. `supabase/migrations/001_initial.sql` — Creates all tables, RLS policies, storage bucket, and seeds 12 products
 
 ### 4. Run Development Server
 
