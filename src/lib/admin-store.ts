@@ -630,15 +630,7 @@ export async function updateOrderStatusAsync(
   note?: string,
   trackingNote?: string
 ): Promise<void> {
-  if (isSupabaseConfigured()) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updates: any = { status, updated_at: new Date().toISOString() };
-    if (note !== undefined) updates.admin_note = note;
-    if (trackingNote !== undefined) updates.tracking_note = trackingNote;
-    const { error } = await supabase!.from("orders").update(updates).eq("id", id);
-    if (error) console.error("Supabase updateOrderStatus error:", error);
-    return;
-  }
+  // Always update localStorage first to keep cache fresh
   const orders = getOrders();
   const idx = orders.findIndex((o) => o.id === id);
   if (idx >= 0) {
@@ -648,6 +640,15 @@ export async function updateOrderStatusAsync(
     orders[idx].updatedAt = new Date().toISOString();
     lsSet(KEYS.ORDERS, orders);
   }
+
+  if (isSupabaseConfigured()) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updates: any = { status, updated_at: new Date().toISOString() };
+    if (note !== undefined) updates.admin_note = note;
+    if (trackingNote !== undefined) updates.tracking_note = trackingNote;
+    const { error } = await supabase!.from("orders").update(updates).eq("id", id);
+    if (error) console.error("Supabase updateOrderStatus error:", error);
+  }
 }
 
 export function updateOrderStatus(id: string, status: Order["status"], note?: string): void {
@@ -655,20 +656,21 @@ export function updateOrderStatus(id: string, status: Order["status"], note?: st
 }
 
 export async function updateOrderUtrAsync(id: string, utr: string): Promise<void> {
-  if (isSupabaseConfigured()) {
-    const { error } = await supabase!
-      .from("orders")
-      .update({ payment_utr: utr, updated_at: new Date().toISOString() })
-      .eq("id", id);
-    if (error) console.error("Supabase updateOrderUtr error:", error);
-    return;
-  }
+  // Always update localStorage first to keep cache fresh
   const orders = getOrders();
   const idx = orders.findIndex((o) => o.id === id);
   if (idx >= 0) {
     orders[idx].paymentUtr = utr;
     orders[idx].updatedAt = new Date().toISOString();
     lsSet(KEYS.ORDERS, orders);
+  }
+
+  if (isSupabaseConfigured()) {
+    const { error } = await supabase!
+      .from("orders")
+      .update({ payment_utr: utr, updated_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) console.error("Supabase updateOrderUtr error:", error);
   }
 }
 

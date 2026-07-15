@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, ChevronDown, ChevronUp, Package, MessageCircle, AlertCircle, Save, Check } from "lucide-react";
-import { getOrders, updateOrderStatus, Order, OrderItem } from "@/lib/admin-store";
+import { getOrders, getOrdersAsync, updateOrderStatus, Order, OrderItem } from "@/lib/admin-store";
 
 const statusFlow: Order["status"][] = [
   "awaiting_verification",
@@ -30,7 +30,14 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true);
+    
+    // Instant sync load (localStorage cache)
     setOrders(getOrders().reverse());
+
+    // Async load (reaches Supabase if active)
+    getOrdersAsync()
+      .then((o) => setOrders(o.reverse()))
+      .catch(console.error);
   }, []);
 
   const handleStatusChange = (orderId: string, newStatus: Order["status"], currentNote?: string) => {

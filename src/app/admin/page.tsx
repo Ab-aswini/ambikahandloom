@@ -11,7 +11,7 @@ import {
   ArrowRight,
   IndianRupee,
 } from "lucide-react";
-import { getStats, getOrders, Order } from "@/lib/admin-store";
+import { getStats, getOrders, getStatsAsync, getOrdersAsync, Order } from "@/lib/admin-store";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -26,8 +26,19 @@ export default function AdminDashboard() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsClient(true);
+    
+    // Instant sync load (localStorage cache)
     setStats(getStats());
     setRecentOrders(getOrders().slice(-5).reverse());
+
+    // Async load (reaches Supabase if active)
+    getStatsAsync()
+      .then((s) => setStats(s))
+      .catch(console.error);
+
+    getOrdersAsync()
+      .then((o) => setRecentOrders(o.slice(-5).reverse()))
+      .catch(console.error);
   }, []);
 
   if (!isClient) return null;
