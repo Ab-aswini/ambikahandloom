@@ -44,8 +44,8 @@ A premium e-commerce platform for authentic Sambalpuri Ikat products, sourced di
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/your-repo/ambika-handloom.git
-cd ambika-handloom
+git clone https://github.com/Ab-aswini/ambikahandloom.git
+cd ambikahandloom
 npm install
 ```
 
