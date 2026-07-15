@@ -119,14 +119,14 @@ export default function RootLayout({
       {
         "@type": ["Organization", "LocalBusiness"],
         "@id": `${siteUrl}/#organization`,
-        "name": "Ambika Handloom",
+        "name": "Ambika Handloom Collection",
         "url": siteUrl,
         "logo": {
           "@type": "ImageObject",
           "url": `${siteUrl}/logo.png`,
           "contentUrl": `${siteUrl}/logo.png`,
-          "name": "Ambika Handloom Logo",
-          "caption": "Ambika Handloom — Authentic Sambalpuri Ikat Sarees from Odisha"
+          "name": "Ambika Handloom Collection Logo",
+          "caption": "Ambika Handloom Collection — Authentic Sambalpuri Ikat Sarees from Odisha"
         },
         "image": `${siteUrl}/images/saree-hero-1.png`,
         "telephone": "+918658476300",
