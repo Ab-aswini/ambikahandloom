@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Grid3X3, LayoutGrid, Rows3, MessageCircle } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-import { products as staticProducts, sections, categoryBySections, Product } from "@/lib/products";
-import { getProductsAsync } from "@/lib/admin-store";
+import { sections, categoryBySections, Product } from "@/lib/products";
+import { getProducts, getProductsAsync } from "@/lib/admin-store";
 
 type GridMode = "grid3" | "grid2" | "list";
 
@@ -22,7 +22,7 @@ function CatalogContent() {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [gridMode, setGridMode] = useState<GridMode>("grid3");
   const [isClient, setIsClient] = useState(false);
-  const [products, setProducts] = useState<Product[]>(staticProducts);
+  const [products, setProducts] = useState<Product[]>(getProducts);
   const [isLoading, setIsLoading] = useState(true);
 
   // Sync state when URL params change (e.g. clicking top header links)

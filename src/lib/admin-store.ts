@@ -140,6 +140,7 @@ const KEYS = {
   SETTINGS: "ambika_settings",
   ADMIN_AUTH: "ambika_admin_auth",
   REVIEWS: "ambika_reviews",
+  PRODUCTS_SEEDED: "ambika_products_seeded",
 };
 
 function lsGet<T>(key: string, fallback: T): T {
@@ -156,6 +157,24 @@ function lsGet<T>(key: string, fallback: T): T {
 function lsSet<T>(key: string, value: T): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(key, JSON.stringify(value));
+}
+
+/**
+ * Auto-seed: On first visit, copy all static products into localStorage
+ * so they become fully editable/deletable from the admin panel.
+ * The static products.ts file is only used as the initial seed source.
+ */
+function ensureProductsSeeded(): void {
+  if (typeof window === "undefined") return;
+  const seeded = localStorage.getItem(KEYS.PRODUCTS_SEEDED);
+  if (!seeded) {
+    const existing = localStorage.getItem(KEYS.PRODUCTS);
+    if (!existing) {
+      // First visit ever — seed with all static products
+      lsSet(KEYS.PRODUCTS, defaultProducts);
+    }
+    localStorage.setItem(KEYS.PRODUCTS_SEEDED, "true");
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -380,11 +399,14 @@ export async function getProductsAsync(): Promise<Product[]> {
     }
     return (data ?? []).map(rowToProduct);
   }
+  // Auto-seed static products into localStorage on first visit
+  ensureProductsSeeded();
   return lsGet<Product[]>(KEYS.PRODUCTS, defaultProducts);
 }
 
 /** Sync version — reads localStorage cache. Use only in client components. */
 export function getProducts(): Product[] {
+  ensureProductsSeeded();
   return lsGet<Product[]>(KEYS.PRODUCTS, defaultProducts);
 }
 

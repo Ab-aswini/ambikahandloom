@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
-import { Product, products } from "@/lib/products";
+import { Product } from "@/lib/products";
+import { getProducts } from "@/lib/admin-store";
 
 const CART_STORAGE_KEY = "ambika_cart";
 
@@ -34,13 +35,14 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 /** Persist product IDs + quantities (+ full data for non-static products) */
 function persistCart(items: CartItem[]): void {
   if (typeof window === "undefined") return;
+  const allProducts = getProducts();
   const stored: StoredCartItem[] = items.map((i) => {
-    const isStatic = products.some((p) => p.id === i.product.id);
+    const isKnown = allProducts.some((p) => p.id === i.product.id);
     return {
       productId: i.product.id,
       quantity: i.quantity,
-      // Store full product data only for admin-added (non-static) products
-      ...(!isStatic && { product: i.product }),
+      // Always store full product data so it survives even if the product list changes
+      ...(!isKnown && { product: i.product }),
     };
   });
   try {
@@ -58,9 +60,10 @@ function restoreCart(): CartItem[] {
     if (!raw) return [];
     const stored: StoredCartItem[] = JSON.parse(raw);
     const restored: CartItem[] = [];
+    const allProducts = getProducts();
     for (const s of stored) {
-      // Try static array first, then fall back to stored product data
-      const product = products.find((p) => p.id === s.productId) || s.product;
+      // Try admin-managed product list first, then fall back to stored product data
+      const product = allProducts.find((p) => p.id === s.productId) || s.product;
       if (product && s.quantity > 0) {
         restored.push({ product, quantity: s.quantity });
       }

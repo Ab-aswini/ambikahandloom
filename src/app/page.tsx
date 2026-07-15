@@ -6,11 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Shield, Truck, Gem, Sparkles } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-import { products as staticProducts, Product } from "@/lib/products";
-import { getSettings, getProductsAsync, SiteSettings } from "@/lib/admin-store";
+import { Product } from "@/lib/products";
+import { getSettings, getProducts, getProductsAsync, SiteSettings } from "@/lib/admin-store";
 
 export default function HomePage() {
-  const [allProducts, setAllProducts] = useState<Product[]>(staticProducts);
+  // getProducts() is sync and auto-seeds static products into localStorage on first visit
+  const [allProducts, setAllProducts] = useState<Product[]>(getProducts);
   const featuredProducts = allProducts.slice(0, 3);
   const sareeProducts = allProducts.filter((p) => p.section === "sarees");
 
@@ -19,7 +20,7 @@ export default function HomePage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPromoSettings(getSettings());
-    // Load products dynamically (Supabase + localStorage)
+    // Refresh products from async source (Supabase if configured)
     getProductsAsync()
       .then((fetched) => {
         if (fetched.length > 0) setAllProducts(fetched);
