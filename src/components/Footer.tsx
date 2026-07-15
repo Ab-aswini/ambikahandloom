@@ -203,6 +203,16 @@ export default function Footer() {
                   </div>
                 </div>
 
+                <a
+                  href="https://maps.app.goo.gl/6xc2EpPMaoHJQsZXA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-cream/5 border border-cream/10 hover:bg-cream/15 text-cream text-xs font-semibold rounded-lg transition-colors"
+                >
+                  <MapPin size={13} />
+                  Open in Google Maps
+                </a>
+
                 <div className="rounded-lg overflow-hidden border border-cream/10 relative h-36 w-full bg-white/5">
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.7647891734787!2d83.4880261!3d20.7146534!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a240f9f335528d5%3A0x49261e522db29e82!2sAmbika%20Sambalpuri%20Handloom!5e1!3m2!1sen!2sin!4v1784110416177!5m2!1sen!2sin"
