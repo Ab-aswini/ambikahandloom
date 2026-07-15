@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Globe, Mail, Phone, MapPin, ArrowRight, Send } from "lucide-react";
 import { useToast } from "@/lib/toast-context";
@@ -97,9 +98,20 @@ export default function Footer() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h3 className="font-serif text-3xl md:text-4xl tracking-tight text-cream mb-4">
-                Ambika Handloom
-              </h3>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="relative w-10 h-10 overflow-hidden rounded-full border border-cream/10 bg-white">
+                  <Image
+                    src="/logo.png"
+                    alt="Ambika Collection Logo"
+                    fill
+                    sizes="40px"
+                    className="object-cover"
+                  />
+                </div>
+                <h3 className="font-serif text-3xl md:text-4xl tracking-tight text-cream">
+                  Ambika Handloom
+                </h3>
+              </div>
               <p className="text-sm leading-relaxed text-cream/50 max-w-sm">
                 Preserving the ancient art of Sambalpuri Ikat weaving. Every
                 thread tells a story of heritage, every saree is a masterpiece

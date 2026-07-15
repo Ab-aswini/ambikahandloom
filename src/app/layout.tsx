@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   ],
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/logo.png", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
     other: [
-      { rel: "mask-icon", url: "/favicon.svg", color: "#1A2B4C" },
+      { rel: "mask-icon", url: "/logo.png", color: "#1A2B4C" },
     ],
   },
   manifest: "/site.webmanifest",
@@ -122,8 +122,8 @@ export default function RootLayout({
         "url": siteUrl,
         "logo": {
           "@type": "ImageObject",
-          "url": `${siteUrl}/favicon.svg`,
-          "contentUrl": `${siteUrl}/favicon.svg`,
+          "url": `${siteUrl}/logo.png`,
+          "contentUrl": `${siteUrl}/logo.png`,
           "name": "Ambika Handloom Logo",
           "caption": "Ambika Handloom — Authentic Sambalpuri Ikat Sarees from Odisha"
         },

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
 import { ShoppingBag, Menu, X } from "lucide-react";
@@ -99,10 +100,14 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-20 md:h-24">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 border border-obsidian/20 rounded-full flex items-center justify-center group-hover:border-crimson-muted transition-colors duration-500">
-                <span className="font-serif text-sm font-semibold text-obsidian group-hover:text-crimson-muted transition-colors duration-500">
-                  A
-                </span>
+              <div className="relative w-9 h-9 overflow-hidden rounded-full border border-obsidian/10 flex items-center justify-center group-hover:border-crimson-muted transition-colors duration-500 bg-white">
+                <Image
+                  src="/logo.png"
+                  alt="Ambika Collection Logo"
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                />
               </div>
               <span className="font-serif text-xl md:text-2xl tracking-tight font-medium">
                 Ambika Handloom
