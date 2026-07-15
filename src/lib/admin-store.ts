@@ -105,7 +105,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   contactEmail: "hello@ambikahandloom.in",
   contactPhone: "+918658476300",
   contactWhatsapp: "+918658476300",
-  contactAddress: "Sonepur Weaver Colony, Subarnapur, Odisha, India — 767017",
+  contactAddress: "Ambika Sambalpuri Handloom, Biju Patnaik Chowk, Sonepur, Odisha, India — 767017",
   heroTitle: "Woven Heritage. Mastered for the Modern Era.",
   heroSubtitle:
     "Authentic Sambalpuri masterpieces sourced directly from master artisans. Uncompromising pure silk, mesmerizing Ikat mathematics, and absolute digital security.",

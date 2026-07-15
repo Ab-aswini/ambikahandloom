@@ -190,15 +190,31 @@ export default function Footer() {
               <h4 className="text-xs tracking-[0.2em] uppercase text-cream/30 mb-6">
                 Atelier
               </h4>
-              <div className="flex items-start gap-3 text-sm text-cream/50">
-                <MapPin size={16} className="flex-shrink-0 mt-0.5" />
-                <p>
-                  Sonepur Weaver Colony
-                  <br />
-                  Subarnapur, Odisha
-                  <br />
-                  India — 767017
-                </p>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-start gap-3 text-sm text-cream/50">
+                  <MapPin size={16} className="flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-cream text-xs">Ambika Sambalpuri Handloom</p>
+                    <p className="mt-1 leading-relaxed">
+                      Biju Patnaik Chowk, Sonepur
+                      <br />
+                      Odisha, India — 767017
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg overflow-hidden border border-cream/10 relative h-36 w-full bg-white/5">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.7647891734787!2d83.4880261!3d20.7146534!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a240f9f335528d5%3A0x49261e522db29e82!2sAmbika%20Sambalpuri%20Handloom!5e1!3m2!1sen!2sin!4v1784110416177!5m2!1sen!2sin"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="Ambika Sambalpuri Handloom Store Location Map"
+                  />
+                </div>
               </div>
             </motion.div>
           </div>

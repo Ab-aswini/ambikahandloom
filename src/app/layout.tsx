@@ -133,16 +133,16 @@ export default function RootLayout({
         "description": "Ambika Handloom sells authentic Sambalpuri Ikat silk sarees, ladies wear, and handloom fabric directly from master artisans of Sonepur and Bargarh, Odisha.",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Sonepur Weaver Colony",
-          "addressLocality": "Subarnapur",
+          "streetAddress": "Biju Patnaik Chowk",
+          "addressLocality": "Sonepur",
           "addressRegion": "Odisha",
           "postalCode": "767017",
           "addressCountry": "IN"
         },
         "geo": {
           "@type": "GeoCoordinates",
-          "latitude": 20.8326,
-          "longitude": 83.9110
+          "latitude": 20.7146534,
+          "longitude": 83.4880261
         },
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
