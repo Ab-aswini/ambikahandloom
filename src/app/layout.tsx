@@ -17,8 +17,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://ambikahandloom.vercel.app");
+  process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
 
 export const metadata: Metadata = {
   title: {

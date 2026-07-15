@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://ambikahandloom.vercel.app");
+  process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
 
 const title = "Collections — Authentic Sambalpuri Ikat Sarees & Ladies Wear | Ambika Handloom";
 const description = "Browse our curated collection of authentic Sambalpuri Ikat silk sarees, ladies kurta sets, dupattas, dress materials, and handloom cut-piece fabric. Handwoven by master artisans of Odisha. Free shipping across India.";
