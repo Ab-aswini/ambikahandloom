@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Category validation
+-- Category validation (drop first to make idempotent)
+ALTER TABLE products DROP CONSTRAINT IF EXISTS products_category_check;
 ALTER TABLE products ADD CONSTRAINT products_category_check
   CHECK (category IN (
     -- Sarees
@@ -44,7 +45,8 @@ ALTER TABLE products ADD CONSTRAINT products_category_check
     'cut-pieces-silk', 'cut-pieces-cotton', 'cut-pieces-blouse'
   ));
 
--- Section validation
+-- Section validation (drop first to make idempotent)
+ALTER TABLE products DROP CONSTRAINT IF EXISTS products_section_check;
 ALTER TABLE products ADD CONSTRAINT products_section_check
   CHECK (section IN ('sarees', 'ladies-wear', 'cut-pieces'));
 
