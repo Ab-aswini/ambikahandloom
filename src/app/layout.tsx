@@ -17,7 +17,8 @@ const cormorant = Cormorant_Garamond({
 });
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://ambikahandloom.vercel.app");
 
 export const metadata: Metadata = {
   title: {
@@ -72,9 +73,9 @@ export const metadata: Metadata = {
     siteName: "Ambika Handloom",
     images: [
       {
-        url: `/images/saree-hero-1.png`,
-        width: 1200,
-        height: 630,
+        url: `${SITE_URL}/logo.png`,
+        width: 800,
+        height: 800,
         alt: "Ambika Handloom — Authentic Sambalpuri Ikat Silk Sarees from Odisha, India",
         type: "image/png",
       },
@@ -87,7 +88,7 @@ export const metadata: Metadata = {
     title: "Ambika Handloom — Authentic Sambalpuri Ikat Sarees & Ladies Wear",
     description:
       "Buy authentic Sambalpuri Ikat silk sarees, ladies kurta sets, and handloom fabric directly from artisans of Odisha.",
-    images: ["/images/saree-hero-1.png"],
+    images: [`${SITE_URL}/logo.png`],
   },
   robots: {
     index: true,
