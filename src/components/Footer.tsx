@@ -196,9 +196,9 @@ export default function Footer() {
                   <div>
                     <p className="font-semibold text-cream text-xs">Ambika Sambalpuri Handloom</p>
                     <p className="mt-1 leading-relaxed">
-                      Biju Patnaik Chowk, Sonepur
+                      Balangir, Odisha
                       <br />
-                      Odisha, India — 767017
+                      India — 767001
                     </p>
                   </div>
                 </div>
