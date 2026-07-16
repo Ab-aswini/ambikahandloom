@@ -190,16 +190,27 @@ CREATE POLICY "Anyone can update blog_posts" ON blog_posts FOR UPDATE USING (tru
 CREATE POLICY "Anyone can delete blog_posts" ON blog_posts FOR DELETE USING (true);
 
 -- ═══════════════════════════════════════════════════
--- STORAGE BUCKETS
+-- STORAGE BUCKETS & POLICIES
 -- ═══════════════════════════════════════════════════
 INSERT INTO storage.buckets (id, name, public) VALUES ('product-images', 'product-images', true)
 ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Public can view product images" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can upload product images" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can update product images" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can delete product images" ON storage.objects;
+
 CREATE POLICY "Public can view product images" ON storage.objects
-  FOR SELECT USING (bucket_id = 'product-images');
+  FOR SELECT TO public USING (bucket_id = 'product-images');
 
 CREATE POLICY "Anyone can upload product images" ON storage.objects
-  FOR INSERT WITH CHECK (bucket_id = 'product-images');
+  FOR INSERT TO public WITH CHECK (bucket_id = 'product-images');
+
+CREATE POLICY "Anyone can update product images" ON storage.objects
+  FOR UPDATE TO public USING (bucket_id = 'product-images') WITH CHECK (bucket_id = 'product-images');
+
+CREATE POLICY "Anyone can delete product images" ON storage.objects
+  FOR DELETE TO public USING (bucket_id = 'product-images');
 
 -- ═══════════════════════════════════════════════════
 -- SEED DATA
