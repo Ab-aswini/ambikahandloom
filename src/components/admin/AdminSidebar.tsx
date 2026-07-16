@@ -11,6 +11,7 @@ import {
   LogOut,
   ExternalLink,
   X,
+  FileText,
 } from "lucide-react";
 import { adminLogout } from "@/lib/admin-store";
 
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/admin/blog", label: "Blog", icon: FileText },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

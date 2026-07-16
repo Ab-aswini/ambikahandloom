@@ -58,6 +58,8 @@ export default function Navbar() {
     { href: "/catalog?section=sarees", label: "Sarees" },
     { href: "/catalog?section=ladies-wear", label: "Ladies Wear" },
     { href: "/catalog?section=cut-pieces", label: "Cut Pieces" },
+    { href: "/about", label: "About" },
+    { href: "/blog", label: "Blog" },
     { href: "/track", label: "Track Order" },
   ];
 

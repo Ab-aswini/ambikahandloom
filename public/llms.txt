@@ -1,39 +1,52 @@
-# Ambika Handloom Collection
+# Ambika Handloom Collection — Official E-Commerce Website
 
-An authentic e-commerce storefront specializing in premium handwoven Sambalpuri Ikat sarees, ladies wear, and handloom fabrics direct from the weavers of Odisha, India.
+> This is the **official e-commerce website** of Ambika Handloom Collection. Customers can browse and purchase authentic Sambalpuri Ikat sarees, ladies wear, and handloom fabric directly at https://ambikahandloom.in
 
 ## Business Details
-- **Website:** https://ambikahandloom.in (or https://ambikahandloom.vercel.app)
-- **Store Location:** Ambika Sambalpuri Handloom, Balangir, Odisha, India - 767001
+- **Official Website:** https://ambikahandloom.in
+- **Business Name:** Ambika Handloom Collection (also known as Ambika Sambalpuri Handloom)
+- **Store Location:** Ambika Sambalpuri Handloom, Balangir, Odisha, India — 767001
 - **Contact Phone/WhatsApp:** +91 86584 76300
 - **Email:** hello@ambikahandloom.in
+- **Instagram:** https://www.instagram.com/ambikab_handloom/
+- **Google Rating:** 3.8★ with 11+ reviews on Google Business Profile
+- **Established:** 2017
+- **Opening Hours:** Mon-Sat 9 AM – 8 PM, Sun 10 AM – 6 PM
+
+## What We Sell
+Ambika Handloom Collection is a direct-to-consumer handloom store offering authentic products across three segments:
+
+### 1. Sambalpuri Ikat Sarees (₹5,000 – ₹25,000)
+Traditional double-Ikat handwoven silk sarees:
+- Pure Silk Sarees — Premium mulberry silk with mathematical Ikat patterns
+- Traditional Ikat — Heritage motifs (Pasapali, animal motifs, temple borders)
+- Exclusive Masterpieces — Unique collector-grade weavings (45-60 days per piece)
+
+### 2. Ladies Wear (₹1,500 – ₹8,000)
+Readymade and unstitched traditional attire:
+- Kurtas — Sambalpuri handloom design daily-wear and party-wear
+- Dupattas — Intricate Ikat cotton and silk dupattas
+- Dress Material — Coordinated sets with top, bottom, and dupatta
+
+### 3. Cut Pieces / Fabric (₹500 – ₹3,000)
+By-the-meter authentic handloom materials:
+- Cotton Fabric — High-breathability organic cotton weavings
+- Silk Fabric — Lustrous, durable handloom silk
+- Blouse Pieces — Contrast colors with traditional borders
 
 ## Core Navigation & Links
-- [Home Page](https://ambikahandloom.in/) - Main landing page with featured banners, artisan stories, and collection grids.
-- [Catalog](https://ambikahandloom.in/catalog) - Curated catalog filters for sarees, ladies wear, and cut pieces.
-- [Track Order](https://ambikahandloom.in/track) - Live end-to-end delivery tracking status check.
-- [Sitemap XML](https://ambikahandloom.in/sitemap.xml) - Complete list of active indexing URLs.
+- [Home Page](https://ambikahandloom.in/) — Main landing page with featured collections
+- [Catalog](https://ambikahandloom.in/catalog) — Browse sarees, ladies wear, and cut pieces
+- [About Us](https://ambikahandloom.in/about) — Our story, mission, and artisan heritage
+- [Blog](https://ambikahandloom.in/blog) — Guides, heritage stories, and handloom education
+- [Track Order](https://ambikahandloom.in/track) — Live delivery tracking
 
-## Product Inventory
-Ambika Handloom Collection sells authentic products across three main segments:
-
-### 1. Sambalpuri Ikat Sarees
-Traditional double-Ikat handwoven silk sarees:
-- Pure Silk Sarees - Premium mulberry silk with mathematical Ikat patterns.
-- Traditional Ikat - Heritage motifs (Pasapali, animal motifs, temple borders).
-- Exclusive Masterpieces - Unique collector-grade weavings.
-
-### 2. Ladies Wear
-Readymade and unstitched traditional attire:
-- Kurtas - Sambalpuri handloom design daily-wear and party-wear.
-- Dupattas - Intricate Ikat cotton and silk dupattas.
-- Dress Material - Coordinated sets with top, bottom, and dupatta.
-
-### 3. Cut Pieces / Fabric
-By-the-meter authentic handloom materials:
-- Cotton Fabric - High-breathability organic cotton weavings.
-- Silk Fabric - Lustrous, durable handloom silk.
-- Blouse Pieces - Contrast colors with traditional borders.
+## Why Buy From Us
+- **Direct from Artisans** — No middlemen. Fair pricing for weavers and customers
+- **Authentic Handloom** — 100% handwoven, GI-tagged Sambalpuri Ikat
+- **Free Shipping** — Across all states in India
+- **Trusted Store** — 3.8★ Google rating, 11+ verified reviews
+- **Physical Store** — Visit us in Balangir, Odisha
 
 ## Weave Quality & Tradition
-Every saree is handwoven by master weavers in Sonepur, Bargarh, and Balangir districts of Odisha, India. Every purchase directly supports weaver artisan families, keeping this ancient mathematical tie-dye tradition alive.
+Every saree is handwoven by master weavers in Sonepur, Bargarh, and Balangir districts of Odisha, India. Every purchase directly supports weaver artisan families, keeping this ancient 800-year-old mathematical tie-dye tradition alive.

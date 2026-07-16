@@ -3,26 +3,26 @@ import type { Metadata } from "next";
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://ambikahandloom.in";
 
-const title = "Sambalpuri Saree Collection — Silk & Cotton | Ambika Handloom";
-const description = "Browse authentic Sambalpuri Ikat silk sarees, ladies kurta sets, dupattas, dress materials & handloom cut-piece fabric. Handwoven by master artisans of Odisha. Free shipping across India. Shop from Balangir's trusted handloom store.";
+const title = "About Us — Authentic Sambalpuri Handloom from Odisha";
+const description = "Ambika Handloom Collection — a regional specialist in Balangir, Odisha, dedicated to authentic Sambalpuri Ikat sarees & handloom textiles. Direct from artisans, fair pricing, heritage preservation. 3.8★ Google rated.";
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: `${SITE_URL}/catalog`,
+    canonical: `${SITE_URL}/about`,
   },
   openGraph: {
     title,
     description,
-    url: `${SITE_URL}/catalog`,
+    url: `${SITE_URL}/about`,
     siteName: "Ambika Handloom Collection",
     images: [
       {
         url: `${SITE_URL}/social-banner.jpg`,
         width: 1200,
         height: 630,
-        alt: "Ambika Handloom — Sambalpuri Saree Collection from Balangir, Odisha",
+        alt: "About Ambika Handloom — Authentic Sambalpuri Handloom from Balangir, Odisha",
         type: "image/jpeg",
       },
     ],
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CatalogLayout({
+export default function AboutLayout({
   children,
 }: {
   children: React.ReactNode;

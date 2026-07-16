@@ -419,13 +419,14 @@ export default function HomePage() {
                   meaning to tie) is one of the most complex textile arts known
                   to humanity. In Sambalpuri tradition, both warp and weft
                   threads are resist-dyed before weaving — a technique demanding
-                  mathematical precision.
+                  mathematical precision. <Link href="/about" className="text-cream/80 underline underline-offset-2 hover:text-cream transition-colors">Learn more about our heritage</Link>.
                 </p>
                 <p>
                   Each saree requires 45 to 60 days of dedicated labor, with
                   the artisan calculating every intersection of thread and color
                   before the loom is even threaded. The result is a fabric where
                   patterns appear to emerge from within the silk itself.
+                  Read our <Link href="/blog/journey-of-ikat-saree-from-weaver-to-wardrobe" className="text-cream/80 underline underline-offset-2 hover:text-cream transition-colors">complete guide to the weaving journey</Link>.
                 </p>
               </div>
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Globe, Mail, Phone, MapPin, ArrowRight, Send } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight, Send } from "lucide-react";
 import { useToast } from "@/lib/toast-context";
 
 export default function Footer() {
@@ -119,28 +119,32 @@ export default function Footer() {
               </p>
               <div className="flex items-center gap-4 mt-6">
                 <a
-                  href="#"
+                  href="https://www.instagram.com/ambikab_handloom/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 border border-cream/20 rounded-full flex items-center justify-center hover:border-cream/60 hover:bg-cream/5 transition-all duration-300"
-                  aria-label="Website"
-                  title="Website"
+                  aria-label="Follow Ambika Handloom on Instagram"
+                  title="Instagram"
                 >
-                  <Globe size={16} />
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="m16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                </a>
+                <a
+                  href="https://wa.me/918658476300"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 border border-cream/20 rounded-full flex items-center justify-center hover:border-cream/60 hover:bg-cream/5 transition-all duration-300"
+                  aria-label="Chat with Ambika Handloom on WhatsApp"
+                  title="WhatsApp"
+                >
+                  <Phone size={16} />
                 </a>
                 <a
                   href="mailto:hello@ambikahandloom.in"
                   className="w-10 h-10 border border-cream/20 rounded-full flex items-center justify-center hover:border-cream/60 hover:bg-cream/5 transition-all duration-300"
-                  aria-label="Email"
+                  aria-label="Email Ambika Handloom"
                   title="Email"
                 >
                   <Mail size={16} />
-                </a>
-                <a
-                  href="tel:+918658476300"
-                  className="w-10 h-10 border border-cream/20 rounded-full flex items-center justify-center hover:border-cream/60 hover:bg-cream/5 transition-all duration-300"
-                  aria-label="Phone"
-                  title="Phone"
-                >
-                  <Phone size={16} />
                 </a>
               </div>
             </motion.div>
@@ -155,12 +159,15 @@ export default function Footer() {
               transition={{ duration: 0.6, delay: 0.1 }}
             >
               <h4 className="text-xs tracking-[0.2em] uppercase text-cream/30 mb-6">
-                Quick Links
+                Shop
               </h4>
-              <div className="flex flex-col gap-3">
+              <nav aria-label="Shop navigation" className="flex flex-col gap-3">
                 {[
-                  { href: "/catalog", label: "Collection" },
-                  { href: "/checkout", label: "Checkout" },
+                  { href: "/catalog?section=sarees", label: "Sambalpuri Sarees" },
+                  { href: "/catalog?section=ladies-wear", label: "Ladies Wear" },
+                  { href: "/catalog?section=cut-pieces", label: "Cut Pieces" },
+                  { href: "/about", label: "About Us" },
+                  { href: "/blog", label: "Blog & Guides" },
                   { href: "/track", label: "Track Order" },
                 ].map((link) => (
                   <Link
@@ -175,7 +182,7 @@ export default function Footer() {
                     />
                   </Link>
                 ))}
-              </div>
+              </nav>
             </motion.div>
           </div>
 
