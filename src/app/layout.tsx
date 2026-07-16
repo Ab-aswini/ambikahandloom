@@ -115,7 +115,7 @@ export const metadata: Metadata = {
     "msapplication-TileColor": "#1A2B4C",
   },
   verification: {
-    google: "",
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
   },
 };
 
