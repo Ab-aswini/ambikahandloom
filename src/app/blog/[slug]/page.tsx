@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BlogPost, getBlogPostBySlug } from "@/lib/admin-store";
+import { BlogPost, getBlogPostBySlugServer } from "@/lib/blog-seeds";
 import { supabase } from "@/lib/supabase";
 import BlogPostClientPage from "./BlogPostClientPage";
 
@@ -18,8 +18,8 @@ export async function generateStaticParams() {
 }
 
 async function findBlogPost(slug: string): Promise<BlogPost | null> {
-  // 1. Try static/seeded blog posts first (fastest fallback)
-  const staticPost = getBlogPostBySlug(slug);
+  // 1. Try static/seeded blog posts first (fastest fallback, server-safe)
+  const staticPost = getBlogPostBySlugServer(slug);
   if (staticPost) return staticPost;
 
   // 2. Try Supabase for database blog posts
@@ -124,5 +124,21 @@ export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = await findBlogPost(slug);
 
-  return <BlogPostClientPage slug={slug} initialPost={post} />;
+  // Mapped object matching client expectation
+  const mappedPost = post ? {
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    content: post.content,
+    coverImage: post.coverImage,
+    category: post.category,
+    tags: post.tags,
+    author: post.author,
+    published: post.published,
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt
+  } : null;
+
+  return <BlogPostClientPage slug={slug} initialPost={mappedPost} />;
 }

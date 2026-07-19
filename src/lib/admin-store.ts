@@ -126,25 +126,25 @@ const DEFAULT_SETTINGS: SiteSettings = {
   heroSubtitle:
     "Authentic Sambalpuri masterpieces sourced directly from master artisans. Uncompromising pure silk, mesmerizing Ikat mathematics, and absolute digital security.",
   promotionEnabled: true,
-  promotionBadge: "Mother's Day Special",
-  promotionTitle: "This Mother's Day, Gift Heritage",
-  promotionSubtitle: "Every Sambalpuri Ikat saree carries centuries of tradition, woven with the love and skill of master artisans. Gift your mother a masterpiece that tells a story — a thread-by-thread testament to timeless beauty and enduring love.",
-  promotionEmoji: "❤️",
+  promotionBadge: "Ratha Yatra Celebration",
+  promotionTitle: "Celebrate the Divine Weaves of Ratha Yatra",
+  promotionSubtitle: "Adorn yourself in the colors of devotion. Every thread of our handcrafted Sambalpuri Ikat sarees is inspired by the sacred symbols, temple motifs, and vibrant shades of Lord Jagannath's grand chariot festival.",
+  promotionEmoji: "🛕",
   promotionFeatures: [
     {
-      emoji: "🎁",
-      title: "Premium Gift Packaging",
-      description: "Every saree arrives in an exquisite handcrafted box with a personalized note.",
+      emoji: "🔴",
+      title: "Sacred Colors of Jagannath",
+      description: "Explore sarees in traditional black, red, yellow, and white — the divine colors of the triad, representing strength, purity, and spiritual devotion.",
     },
     {
-      emoji: "✨",
-      title: "Certificate of Authenticity",
-      description: "Each masterpiece comes with a signed certificate from the artisan who wove it.",
+      emoji: "🛕",
+      title: "Traditional Temple Motifs",
+      description: "Our weaves feature the classic 'Phoda Kumbha' (temple spire border) and wheel patterns, symbolizing the cosmic chariot and timeless craftsmanship.",
     },
     {
-      emoji: "💌",
-      title: "Personal Message Card",
-      description: "Add a heartfelt message on our handmade cotton rag paper card, tucked inside the gift box.",
+      emoji: "📿",
+      title: "Blessings from Weaving Looms",
+      description: "Each masterpiece is crafted with prayers and precision by master artisans of Sonepur and Bargarh, keeping our cultural heritage alive.",
     },
   ],
 };
