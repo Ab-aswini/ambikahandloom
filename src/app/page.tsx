@@ -484,6 +484,84 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ===== SAMBALPURI DIN CULTURAL TRIBUTE SECTION ===== */}
+      <section className="py-20 md:py-28 bg-gradient-to-br from-cream via-warm-100/40 to-cream border-t border-warm-200">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="lg:col-span-7 space-y-6"
+            >
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-crimson-muted/10 border border-crimson-muted/20 rounded-full text-crimson-muted text-xs tracking-[0.15em] uppercase font-medium">
+                <span>🌸</span>
+                August 1st — Sambalpuri Din Celebration
+              </div>
+
+              <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[0.95] text-obsidian">
+                Honoring the Architects of
+                <br />
+                <span className="text-indigo-deep">Sambalpuri Culture</span>
+              </h2>
+
+              <p className="text-sm md:text-base leading-relaxed text-obsidian/70">
+                August 1st marks the birth anniversary of <strong>Guru Satyanarayan Bohidar</strong> (1913–1980), the legendary pioneer who dedicated his life to giving formal identity, grammar, and literary stature to the Sambalpuri language and Western Odisha&apos;s rich cultural heritage.
+              </p>
+
+              <p className="text-sm leading-relaxed text-obsidian/60">
+                Together with the master weavers of Sonepur, Bargarh, and Balangir — who transform thread into intricate Pasapalli and Bomkai double-Ikat patterns — we celebrate Sambalpuri Din with deep pride, cultural reverence, and authentic handloom artistry.
+              </p>
+
+              <div className="pt-4 flex flex-wrap gap-4 items-center">
+                <Link
+                  href="/blog/celebrating-sambalpuri-din-satyanarayan-bohidar-heritage"
+                  className="inline-flex items-center gap-2 bg-obsidian text-cream px-6 py-3.5 text-xs tracking-[0.15em] uppercase font-medium rounded-xl hover:bg-indigo-deep transition-colors duration-300"
+                >
+                  Read Tribute Story
+                  <ArrowRight size={14} />
+                </Link>
+                <Link
+                  href="/catalog?section=sarees"
+                  className="inline-flex items-center gap-2 border border-obsidian/20 text-obsidian px-6 py-3.5 text-xs tracking-[0.15em] uppercase font-medium rounded-xl hover:bg-obsidian hover:text-cream transition-all duration-300"
+                >
+                  Explore Authentic Weaves
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="lg:col-span-5 relative aspect-[4/3] lg:aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border border-warm-200 bg-obsidian"
+            >
+              <Image
+                src="/images/saree-hero-1.png"
+                alt="Sambalpuri Din Celebration — Authentic Sambalpuri Ikat Saree by Ambika Handloom"
+                fill
+                className="object-cover img-hover-scale"
+                sizes="(max-width: 1024px) 100vw, 40vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-obsidian/80 via-obsidian/20 to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 text-cream">
+                <span className="text-[10px] tracking-[0.2em] uppercase text-cream/50 block mb-1">
+                  Heritage Tribute
+                </span>
+                <p className="font-serif text-xl tracking-tight text-cream">
+                  Guru Satyanarayan Bohidar &amp; The Loom Artisans
+                </p>
+                <p className="text-xs text-cream/60 mt-1">
+                  Western Odisha Handloom Heritage • Balangir &amp; Sonepur
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* ===== SPECIFICATIONS DIRECTORY (GEO & AEO optimization) ===== */}
       <section className="py-20 bg-warm-100/30 border-y border-warm-200">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12">

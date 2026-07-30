@@ -8,6 +8,7 @@ const SEED_BLOG_SLUGS = [
   { slug: "journey-of-ikat-saree-from-weaver-to-wardrobe", updatedAt: "2025-12-15T10:00:00Z" },
   { slug: "how-to-identify-authentic-sambalpuri-sarees", updatedAt: "2026-01-10T10:00:00Z" },
   { slug: "handloom-vs-powerloom-why-the-difference-matters", updatedAt: "2026-02-20T10:00:00Z" },
+  { slug: "celebrating-sambalpuri-din-satyanarayan-bohidar-heritage", updatedAt: "2026-08-01T00:00:00Z" },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

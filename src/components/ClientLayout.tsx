@@ -6,6 +6,7 @@ import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import { CartProvider } from "@/lib/cart-context";
 import { ToastProvider } from "@/lib/toast-context";
 import Navbar from "@/components/Navbar";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import CartDrawer from "@/components/CartDrawer";
 import ToastContainer from "@/components/ToastContainer";
 import Footer from "@/components/Footer";
@@ -149,6 +150,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     <CartProvider>
       <ToastProvider>
         {!isAdmin && <ScrollProgress />}
+        {!isAdmin && <AnnouncementBar />}
         {!isAdmin && (
           <Suspense fallback={null}>
             <Navbar />

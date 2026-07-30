@@ -126,25 +126,25 @@ const DEFAULT_SETTINGS: SiteSettings = {
   heroSubtitle:
     "Authentic Sambalpuri masterpieces sourced directly from master artisans. Uncompromising pure silk, mesmerizing Ikat mathematics, and absolute digital security.",
   promotionEnabled: true,
-  promotionBadge: "Ratha Yatra Celebration",
-  promotionTitle: "Celebrate the Divine Weaves of Ratha Yatra",
-  promotionSubtitle: "Adorn yourself in the colors of devotion. Every thread of our handcrafted Sambalpuri Ikat sarees is inspired by the sacred symbols, temple motifs, and vibrant shades of Lord Jagannath's grand chariot festival.",
-  promotionEmoji: "🛕",
+  promotionBadge: "Sambalpuri Din Special — August 1st",
+  promotionTitle: "Celebrating Sambalpuri Din & Our Handloom Pioneers",
+  promotionSubtitle: "On August 1st, we pay homage to Guru Satyanarayan Bohidar — pioneer of Sambalpuri culture — and the master weavers of Sonepur, Bargarh, and Balangir who weave our heritage into every thread.",
+  promotionEmoji: "🌸",
   promotionFeatures: [
     {
-      emoji: "🔴",
-      title: "Sacred Colors of Jagannath",
-      description: "Explore sarees in traditional black, red, yellow, and white — the divine colors of the triad, representing strength, purity, and spiritual devotion.",
+      emoji: "📜",
+      title: "Legacy of Satyanarayan Bohidar",
+      description: "Honoring the visionary who gave voice and pride to Sambalpuri literature, folk arts (Dalkhai, Rasarkeli), and regional identity.",
     },
     {
-      emoji: "🛕",
-      title: "Traditional Temple Motifs",
-      description: "Our weaves feature the classic 'Phoda Kumbha' (temple spire border) and wheel patterns, symbolizing the cosmic chariot and timeless craftsmanship.",
+      emoji: "💃",
+      title: "Rhythms of Dalkhai & Rasarkeli",
+      description: "Reflecting the vibrant spirit of Western Odisha folk traditions, captured in intricate hand-dyed Pasapalli and Bomkai Ikat motifs.",
     },
     {
-      emoji: "📿",
-      title: "Blessings from Weaving Looms",
-      description: "Each masterpiece is crafted with prayers and precision by master artisans of Sonepur and Bargarh, keeping our cultural heritage alive.",
+      emoji: "🪡",
+      title: "Master Weavers of Odisha",
+      description: "Authentic 100% pure silk and cotton handloom sarees, woven with GI-tagged precision directly by artisan families.",
     },
   ],
 };

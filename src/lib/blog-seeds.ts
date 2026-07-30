@@ -127,6 +127,37 @@ export const SEED_BLOG_POSTS: BlogPost[] = [
     createdAt: "2026-02-20T10:00:00Z",
     updatedAt: "2026-02-20T10:00:00Z",
   },
+  {
+    id: "blog-004",
+    slug: "celebrating-sambalpuri-din-satyanarayan-bohidar-heritage",
+    title: "Celebrating Sambalpuri Din: Honoring Guru Satyanarayan Bohidar & The Weavers of Odisha",
+    excerpt: "Every year on August 1st, Odisha celebrates Sambalpuri Din. Learn about the legacy of Guru Satyanarayan Bohidar, the cultural rhythms of Dalkhai and Rasarkeli, and the master artisans who weave our heritage.",
+    content: `<h2>The Significance of August 1st: Sambalpuri Din</h2>
+<p>August 1st marks the birth anniversary of <strong>Guru Satyanarayan Bohidar</strong> (1913–1980), revered as the founding pioneer of Sambalpuri language, literature, and cultural consciousness. On this day, Western Odisha and handloom lovers across the world come together to celebrate <em>Sambalpuri Din (Sambalpuri Day)</em> — a festival of linguistic pride, indigenous art, and world-renowned Ikat handloom weaving.</p>
+
+<h2>Who Was Guru Satyanarayan Bohidar?</h2>
+<p>Born in Sonepur and dedicated to the cultural renaissance of Sambalpur, Guru Satyanarayan Bohidar spent his life documenting and promoting Sambalpuri language and folk traditions. He authored foundational dictionaries, grammar texts, and poetry in Sambalpuri, giving formal identity to the rich oral traditions of Western Odisha. His vision inspired generations to take pride in their native dialect, music (such as <em>Dalkhai</em>, <em>Rasarkeli</em>, and <em>Sajani</em>), and traditional crafts.</p>
+
+<h2>The Thread That Binds: Sambalpuri Ikat & Cultural Identity</h2>
+<p>Just as Guru Satyanarayan Bohidar wove words into timeless literature, the master weavers of Sonepur, Bargarh, and Balangir weave silk and cotton threads into mathematical masterpieces. The distinctive <strong>Bandha (Ikat)</strong> resist-dyeing technique is intrinsic to Sambalpuri identity.</p>
+
+<p>From the iconic <strong>Pasapalli</strong> (chessboard pattern representing cosmic harmony) to the <strong>Phoda Kumbha</strong> (temple border spires) and floral <strong>Bichitrapuri</strong> motifs, every pattern carries centuries of spiritual and cultural symbolism.</p>
+
+<h2>Rhythms of Folk Music in the Loom</h2>
+<p>Walk through the weaving villages of Subarnapur or Bargarh on Sambalpuri Din, and you will hear the rhythmic clack of wooden handlooms moving in harmony with traditional folk tunes. The vibrant reds, deep indigos, turmeric yellows, and obsidian blacks of Sambalpuri sarees mirror the festive costumes worn during Dalkhai and Nuakhai dances.</p>
+
+<h2>Preserving the Legend: Why Authentic Handloom Matters</h2>
+<p>Celebrating Sambalpuri Din is not just about wearing traditional attire for a day — it is about sustaining the weaver families who preserve this 800-year-old art form. When you choose a genuine, GI-tagged handwoven Sambalpuri saree from Ambika Handloom, you are directly honoring Guru Satyanarayan Bohidar's vision by protecting the livelihoods of Odisha's master artisans.</p>
+
+<p>Join us this August 1st in celebrating Sambalpuri Din with pride, grace, and authentic handwoven elegance.</p>`,
+    coverImage: "/images/saree-hero-1.png",
+    category: "Heritage & Culture",
+    tags: ["Sambalpuri Din", "Satyanarayan Bohidar", "Odisha heritage", "Sambalpuri Ikat", "Dalkhai", "handloom weavers"],
+    author: "Ambika Handloom",
+    published: true,
+    createdAt: "2026-08-01T00:00:00Z",
+    updatedAt: "2026-08-01T00:00:00Z",
+  },
 ];
 
 export function getBlogPostBySlugServer(slug: string): BlogPost | null {

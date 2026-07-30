@@ -14,6 +14,7 @@ export async function generateStaticParams() {
     { slug: "journey-of-ikat-saree-from-weaver-to-wardrobe" },
     { slug: "how-to-identify-authentic-sambalpuri-sarees" },
     { slug: "handloom-vs-powerloom-why-the-difference-matters" },
+    { slug: "celebrating-sambalpuri-din-satyanarayan-bohidar-heritage" },
   ];
 }
 
