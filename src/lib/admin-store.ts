@@ -807,7 +807,13 @@ export async function getSettingsAsync(): Promise<SiteSettings> {
       .eq("id", 1)
       .single();
     if (error || !data) return DEFAULT_SETTINGS;
-    return {
+
+    // Auto-migrate legacy Ratha Yatra promotion to Sambalpuri Din
+    const isOldRathaYatra =
+      data.promotion_badge?.includes("Ratha Yatra") ||
+      data.promotion_title?.includes("Ratha Yatra");
+
+    const settings: SiteSettings = {
       paymentUpi: data.payment_upi,
       paymentBank: data.payment_bank,
       paymentAccountNo: data.payment_account_no,
@@ -818,13 +824,19 @@ export async function getSettingsAsync(): Promise<SiteSettings> {
       contactAddress: data.contact_address,
       heroTitle: data.hero_title,
       heroSubtitle: data.hero_subtitle,
-      promotionEnabled: data.promotion_enabled ?? data.mothers_day_enabled ?? true,
-      promotionBadge: data.promotion_badge ?? DEFAULT_SETTINGS.promotionBadge,
-      promotionTitle: data.promotion_title ?? DEFAULT_SETTINGS.promotionTitle,
-      promotionSubtitle: data.promotion_subtitle ?? DEFAULT_SETTINGS.promotionSubtitle,
-      promotionEmoji: data.promotion_emoji ?? DEFAULT_SETTINGS.promotionEmoji,
-      promotionFeatures: data.promotion_features ?? DEFAULT_SETTINGS.promotionFeatures,
+      promotionEnabled: isOldRathaYatra ? DEFAULT_SETTINGS.promotionEnabled : (data.promotion_enabled ?? data.mothers_day_enabled ?? true),
+      promotionBadge: isOldRathaYatra ? DEFAULT_SETTINGS.promotionBadge : (data.promotion_badge ?? DEFAULT_SETTINGS.promotionBadge),
+      promotionTitle: isOldRathaYatra ? DEFAULT_SETTINGS.promotionTitle : (data.promotion_title ?? DEFAULT_SETTINGS.promotionTitle),
+      promotionSubtitle: isOldRathaYatra ? DEFAULT_SETTINGS.promotionSubtitle : (data.promotion_subtitle ?? DEFAULT_SETTINGS.promotionSubtitle),
+      promotionEmoji: isOldRathaYatra ? DEFAULT_SETTINGS.promotionEmoji : (data.promotion_emoji ?? DEFAULT_SETTINGS.promotionEmoji),
+      promotionFeatures: isOldRathaYatra ? DEFAULT_SETTINGS.promotionFeatures : (data.promotion_features ?? DEFAULT_SETTINGS.promotionFeatures),
     };
+
+    if (isOldRathaYatra) {
+      saveSettingsAsync(settings).catch(console.error);
+    }
+
+    return settings;
   }
   return lsGet<SiteSettings>(KEYS.SETTINGS, DEFAULT_SETTINGS);
 }
