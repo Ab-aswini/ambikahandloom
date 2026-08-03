@@ -1171,13 +1171,18 @@ export async function resetProductsToDefaultAsync(): Promise<{ success: boolean;
 
 function ensureBlogSeeded(): void {
   if (typeof window === "undefined") return;
-  const seeded = localStorage.getItem(KEYS.BLOG_SEEDED);
-  if (!seeded) {
-    const existing = localStorage.getItem(KEYS.BLOG_POSTS);
-    if (!existing) {
-      lsSet(KEYS.BLOG_POSTS, SEED_BLOG_POSTS);
-    }
+  const existing = lsGet<BlogPost[]>(KEYS.BLOG_POSTS, []);
+  if (existing.length === 0) {
+    lsSet(KEYS.BLOG_POSTS, SEED_BLOG_POSTS);
     localStorage.setItem(KEYS.BLOG_SEEDED, "true");
+  } else {
+    // Check if any seed posts are missing in existing localStorage
+    const existingIds = new Set(existing.map((p) => p.id));
+    const missing = SEED_BLOG_POSTS.filter((s) => !existingIds.has(s.id));
+    if (missing.length > 0) {
+      const merged = [...existing, ...missing];
+      lsSet(KEYS.BLOG_POSTS, merged);
+    }
   }
 }
 
@@ -1197,10 +1202,42 @@ export async function getBlogPostsAsync(): Promise<BlogPost[]> {
         .from("blog_posts")
         .select("*")
         .order("created_at", { ascending: false });
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         const mapped = data.map(mapDbBlogPost);
-        lsSet(KEYS.BLOG_POSTS, mapped);
-        return mapped;
+        // Auto-seed missing seed posts into Supabase
+        const dbIds = new Set(mapped.map((p) => p.id));
+        const missingSeeds = SEED_BLOG_POSTS.filter((s) => !dbIds.has(s.id));
+        if (missingSeeds.length > 0) {
+          for (const seed of missingSeeds) {
+            await supabase!.from("blog_posts").upsert({
+              id: seed.id,
+              slug: seed.slug,
+              title: seed.title,
+              excerpt: seed.excerpt,
+              content: seed.content,
+              cover_image: seed.coverImage,
+              category: seed.category,
+              tags: seed.tags,
+              author: seed.author,
+              published: seed.published,
+              created_at: seed.createdAt,
+              updated_at: seed.updatedAt,
+            });
+          }
+          const { data: refreshed } = await supabase!
+            .from("blog_posts")
+            .select("*")
+            .order("created_at", { ascending: false });
+          if (refreshed && refreshed.length > 0) {
+            const refreshedMapped = refreshed.map(mapDbBlogPost);
+            lsSet(KEYS.BLOG_POSTS, refreshedMapped);
+            return refreshedMapped;
+          }
+        }
+        if (mapped.length > 0) {
+          lsSet(KEYS.BLOG_POSTS, mapped);
+          return mapped;
+        }
       }
     } catch (err) {
       console.error("Blog Supabase fetch error:", err);
