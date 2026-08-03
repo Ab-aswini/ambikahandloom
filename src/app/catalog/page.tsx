@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Grid3X3, LayoutGrid, Rows3, MessageCircle } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
@@ -65,28 +65,17 @@ function CatalogContent() {
     }
   };
 
+  const router = useRouter();
+
   const handleSectionChange = (sectionId: string) => {
     setActiveSection(sectionId);
     setActiveCategory("all");
-
-    // Sync changes back to URL parameters
-    if (typeof window !== "undefined") {
-      const url = new URL(window.location.href);
-      url.searchParams.set("section", sectionId);
-      url.searchParams.set("category", "all");
-      window.history.pushState(null, "", url.pathname + url.search);
-    }
+    router.push(`/catalog?section=${sectionId}&category=all`, { scroll: false });
   };
 
   const handleCategoryChange = (categoryId: string) => {
     setActiveCategory(categoryId);
-
-    // Sync changes back to URL parameters
-    if (typeof window !== "undefined") {
-      const url = new URL(window.location.href);
-      url.searchParams.set("category", categoryId);
-      window.history.pushState(null, "", url.pathname + url.search);
-    }
+    router.push(`/catalog?section=${activeSection}&category=${categoryId}`, { scroll: false });
   };
 
   const currentCategories = categoryBySections[activeSection] || [];

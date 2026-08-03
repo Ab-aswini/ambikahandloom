@@ -27,8 +27,10 @@ const WHATSAPP_NUMBER =
 
 export default function ProductDetailClient({
   product,
+  relatedProducts = [],
 }: {
   product: Product;
+  relatedProducts?: Product[];
 }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -443,6 +445,37 @@ export default function ProductDetailClient({
                 </div>
                 );
               })}
+            </div>
+          </motion.section>
+        )}
+
+        {/* ─── You May Also Like ─── */}
+        {relatedProducts.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight mb-8">You May Also Like</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {relatedProducts.map((rp) => (
+                <Link key={rp.id} href={`/catalog/${rp.id}`} className="group block">
+                  <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-3 bg-warm-100">
+                    <Image
+                      src={rp.image}
+                      alt={`${rp.name} — ${rp.categoryLabel} by Ambika Handloom`}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                    />
+                  </div>
+                  <h3 className="font-serif text-sm leading-tight group-hover:text-indigo-deep transition-colors">
+                    {rp.name.split("—")[0].trim()}
+                  </h3>
+                  <p className="text-xs text-obsidian/50 mt-1">₹{rp.price.toLocaleString("en-IN")}</p>
+                </Link>
+              ))}
             </div>
           </motion.section>
         )}

@@ -6,23 +6,32 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, ArrowRight, Send } from "lucide-react";
 import { useToast } from "@/lib/toast-context";
+import { saveNewsletterEmail } from "@/lib/admin-store";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showToast } = useToast();
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed) return;
 
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      showToast("Welcome to the Ambika family! You'll hear from us soon.");
+    try {
+      const result = await saveNewsletterEmail(trimmed);
+      if (result === "duplicate") {
+        showToast("You're already part of the Ambika family! 🙏");
+      } else {
+        showToast("Welcome to the Ambika family! You'll hear from us soon.");
+      }
       setEmail("");
+    } catch {
+      showToast("Something went wrong. Please try again.");
+    } finally {
       setIsSubmitting(false);
-    }, 800);
+    }
   };
 
   return (

@@ -144,6 +144,13 @@ CREATE TABLE blog_posts (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ─── Newsletter Subscribers Table ─────────────────
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email TEXT UNIQUE NOT NULL,
+  subscribed_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Insert default settings row
 INSERT INTO site_settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
 
@@ -188,6 +195,11 @@ CREATE POLICY "Anyone can read blog_posts" ON blog_posts FOR SELECT USING (true)
 CREATE POLICY "Anyone can insert blog_posts" ON blog_posts FOR INSERT WITH CHECK (true);
 CREATE POLICY "Anyone can update blog_posts" ON blog_posts FOR UPDATE USING (true);
 CREATE POLICY "Anyone can delete blog_posts" ON blog_posts FOR DELETE USING (true);
+
+-- Newsletter Subscribers
+ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can read newsletter_subscribers" ON newsletter_subscribers FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert newsletter_subscribers" ON newsletter_subscribers FOR INSERT WITH CHECK (true);
 
 -- ═══════════════════════════════════════════════════
 -- STORAGE BUCKETS & POLICIES

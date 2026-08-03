@@ -1295,3 +1295,47 @@ function mapDbBlogPost(row: any): BlogPost {
   };
 }
 
+// ─── Newsletter Subscribers ─────────────────────────────────
+
+const LS_NEWSLETTER_KEY = "ah-newsletter-subscribers";
+
+interface NewsletterSubscriber {
+  email: string;
+  subscribedAt: string;
+}
+
+/** Save a newsletter email. Returns "saved" or "duplicate". */
+export async function saveNewsletterEmail(email: string): Promise<"saved" | "duplicate"> {
+  // Try Supabase first
+  if (isSupabaseConfigured()) {
+    try {
+      // Check for duplicate
+      const { data: existing } = await supabase!.from("newsletter_subscribers").select("email").eq("email", email).single();
+      if (existing) return "duplicate";
+      // Insert
+      const { error } = await supabase!.from("newsletter_subscribers").insert({ email, subscribed_at: new Date().toISOString() });
+      if (!error) return "saved";
+    } catch {
+      // Fall through to localStorage
+    }
+  }
+
+  // Fallback: localStorage
+  const raw = localStorage.getItem(LS_NEWSLETTER_KEY);
+  const subscribers: NewsletterSubscriber[] = raw ? JSON.parse(raw) : [];
+  
+  if (subscribers.some((s) => s.email === email)) {
+    return "duplicate";
+  }
+
+  subscribers.push({ email, subscribedAt: new Date().toISOString() });
+  localStorage.setItem(LS_NEWSLETTER_KEY, JSON.stringify(subscribers));
+  return "saved";
+}
+
+/** Get all newsletter subscribers (for admin panel). */
+export function getNewsletterSubscribers(): NewsletterSubscriber[] {
+  if (typeof window === "undefined") return [];
+  const raw = localStorage.getItem(LS_NEWSLETTER_KEY);
+  return raw ? JSON.parse(raw) : [];
+}

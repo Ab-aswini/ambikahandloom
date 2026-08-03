@@ -421,13 +421,18 @@ export default async function ProductDetailPage({ params }: Props) {
     ],
   };
 
+  // Compute related products (same section, excluding current, max 4)
+  const relatedProducts = products
+    .filter((p) => p.section === product.section && p.id !== product.id && p.inStock)
+    .slice(0, 4);
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ProductDetailClient product={product} />
+      <ProductDetailClient product={product} relatedProducts={relatedProducts} />
     </>
   );
 }

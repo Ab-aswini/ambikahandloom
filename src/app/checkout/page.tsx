@@ -9,6 +9,16 @@ import { useCart } from "@/lib/cart-context";
 import { useToast } from "@/lib/toast-context";
 import { saveOrderAsync, getSettingsAsync, updateOrderUtrAsync, SiteSettings, buildOrderWhatsAppUrl, Order } from "@/lib/admin-store";
 
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman & Nicobar Islands", "Chandigarh", "Dadra & Nagar Haveli and Daman & Diu",
+  "Delhi", "Jammu & Kashmir", "Ladakh", "Lakshadweep", "Puducherry",
+];
+
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const { showToast } = useToast();
@@ -37,6 +47,17 @@ export default function CheckoutPage() {
       .then((s) => setSettings(s))
       .catch(console.error);
   }, []);
+
+  // Warn user before leaving if form has data (prevents accidental data loss)
+  useEffect(() => {
+    const hasData = formData.fullName || formData.phone || formData.address;
+    if (!hasData || isSubmitted) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [formData.fullName, formData.phone, formData.address, isSubmitted]);
 
   const advanceAmount = Math.round(totalPrice * 0.2);
   const payableAmount = paymentType === "full" ? totalPrice : advanceAmount;
@@ -285,13 +306,18 @@ export default function CheckoutPage() {
               <div>
                 <h3 className="text-xs tracking-[0.2em] uppercase text-obsidian/40 mb-4">Contact Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2"><input type="text" required minLength={2} value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} placeholder="Full Name" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" /></div>
+                  <div className="md:col-span-2">
+                    <label htmlFor="checkout-fullname" className="sr-only">Full Name</label>
+                    <input id="checkout-fullname" type="text" required minLength={2} value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} placeholder="Full Name" autoComplete="name" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" />
+                  </div>
                   <div>
-                    <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email Address" className={`w-full px-4 py-3.5 bg-warm-100 border rounded-xl text-sm placeholder:text-obsidian/30 ${formData.email && !isValidEmail ? 'border-rose-300' : 'border-warm-200'}`} />
+                    <label htmlFor="checkout-email" className="sr-only">Email Address</label>
+                    <input id="checkout-email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email Address" autoComplete="email" className={`w-full px-4 py-3.5 bg-warm-100 border rounded-xl text-sm placeholder:text-obsidian/30 ${formData.email && !isValidEmail ? 'border-rose-300' : 'border-warm-200'}`} />
                     {formData.email && !isValidEmail && <p className="text-[10px] text-rose-500 mt-1 pl-1">Enter a valid email address</p>}
                   </div>
                   <div>
-                    <input type="tel" required pattern="[6-9][0-9]{9}" maxLength={10} value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })} placeholder="10-digit Mobile Number" className={`w-full px-4 py-3.5 bg-warm-100 border rounded-xl text-sm placeholder:text-obsidian/30 ${formData.phone && !isValidPhone ? 'border-rose-300' : 'border-warm-200'}`} />
+                    <label htmlFor="checkout-phone" className="sr-only">Mobile Number</label>
+                    <input id="checkout-phone" type="tel" required pattern="[6-9][0-9]{9}" maxLength={10} value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })} placeholder="10-digit Mobile Number" autoComplete="tel" className={`w-full px-4 py-3.5 bg-warm-100 border rounded-xl text-sm placeholder:text-obsidian/30 ${formData.phone && !isValidPhone ? 'border-rose-300' : 'border-warm-200'}`} />
                     {formData.phone && !isValidPhone && <p className="text-[10px] text-rose-500 mt-1 pl-1">Enter a valid 10-digit Indian mobile number</p>}
                   </div>
                 </div>
@@ -300,11 +326,26 @@ export default function CheckoutPage() {
               <div>
                 <h3 className="text-xs tracking-[0.2em] uppercase text-obsidian/40 mb-4">Delivery Address</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2"><textarea required value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder="Full Address" rows={3} className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30 resize-none" /></div>
-                  <input type="text" required value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} placeholder="City" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" />
-                  <input type="text" required value={formData.state} onChange={(e) => setFormData({ ...formData, state: e.target.value })} placeholder="State" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" />
+                  <div className="md:col-span-2">
+                    <label htmlFor="checkout-address" className="sr-only">Full Address</label>
+                    <textarea id="checkout-address" required value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder="Full Address" rows={3} autoComplete="street-address" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30 resize-none" />
+                  </div>
                   <div>
-                    <input type="text" required pattern="\d{6}" maxLength={6} value={formData.pincode} onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) })} placeholder="6-digit PIN Code" className={`w-full px-4 py-3.5 bg-warm-100 border rounded-xl text-sm placeholder:text-obsidian/30 ${formData.pincode && !isValidPincode ? 'border-rose-300' : 'border-warm-200'}`} />
+                    <label htmlFor="checkout-city" className="sr-only">City</label>
+                    <input id="checkout-city" type="text" required value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} placeholder="City" autoComplete="address-level2" className="w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm placeholder:text-obsidian/30" />
+                  </div>
+                  <div>
+                    <label htmlFor="checkout-state" className="sr-only">State</label>
+                    <select id="checkout-state" required value={formData.state} onChange={(e) => setFormData({ ...formData, state: e.target.value })} autoComplete="address-level1" className={`w-full px-4 py-3.5 bg-warm-100 border border-warm-200 rounded-xl text-sm appearance-none ${!formData.state ? 'text-obsidian/30' : ''}`}>
+                      <option value="" disabled>Select State</option>
+                      {INDIAN_STATES.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="checkout-pincode" className="sr-only">PIN Code</label>
+                    <input id="checkout-pincode" type="text" required pattern="\d{6}" maxLength={6} value={formData.pincode} onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) })} placeholder="6-digit PIN Code" autoComplete="postal-code" className={`w-full px-4 py-3.5 bg-warm-100 border rounded-xl text-sm placeholder:text-obsidian/30 ${formData.pincode && !isValidPincode ? 'border-rose-300' : 'border-warm-200'}`} />
                     {formData.pincode && !isValidPincode && <p className="text-[10px] text-rose-500 mt-1 pl-1">Enter a valid 6-digit PIN code</p>}
                   </div>
                 </div>
