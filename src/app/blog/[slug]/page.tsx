@@ -19,11 +19,7 @@ export async function generateStaticParams() {
 }
 
 async function findBlogPost(slug: string): Promise<BlogPost | null> {
-  // 1. Try static/seeded blog posts first (fastest fallback, server-safe)
-  const staticPost = getBlogPostBySlugServer(slug);
-  if (staticPost) return staticPost;
-
-  // 2. Try Supabase for database blog posts
+  // 1. Try Supabase first for real database blog posts
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (supabase && url && url !== "https://your-project-id.supabase.co") {
     try {
@@ -53,7 +49,8 @@ async function findBlogPost(slug: string): Promise<BlogPost | null> {
     }
   }
 
-  return null;
+  // 2. Fallback to static/seeded blog posts if Supabase is not configured or item not found
+  return getBlogPostBySlugServer(slug);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
