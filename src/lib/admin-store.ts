@@ -122,7 +122,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   contactEmail: "hello@ambikahandloom.in",
   contactPhone: "+918658476300",
   contactWhatsapp: "+918658476300",
-  contactAddress: "Ambika Sambalpuri Handloom, Balangir, Odisha, India — 767001",
+  contactAddress: "Ambika Sambalpuri Handloom, Chimni Bhati Road, Near Somu Agency, Bibhutipara, Balangir, Odisha, India — 767001",
   heroTitle: "Woven Heritage. Mastered for the Modern Era.",
   heroSubtitle:
     "Authentic Sambalpuri masterpieces sourced directly from master artisans. Uncompromising pure silk, mesmerizing Ikat mathematics, and absolute digital security.",

@@ -202,8 +202,10 @@ export default function Footer() {
                   <MapPin size={16} className="flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-cream text-xs">Ambika Sambalpuri Handloom</p>
-                    <p className="mt-1 leading-relaxed">
-                      Balangir, Odisha
+                    <p className="mt-1 leading-relaxed text-xs">
+                      Chimni Bhati Road, Near Somu Agency,
+                      <br />
+                      Bibhutipara, Balangir, Odisha
                       <br />
                       India — 767001
                     </p>

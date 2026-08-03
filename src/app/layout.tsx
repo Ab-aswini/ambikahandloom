@@ -113,6 +113,15 @@ export const metadata: Metadata = {
   other: {
     "theme-color": "#1A2B4C",
     "msapplication-TileColor": "#1A2B4C",
+    "geo.position": "20.7146534;83.4880261",
+    "geo.region": "IN-OR",
+    "geo.placename": "Balangir, Odisha, India",
+    "ICBM": "20.7146534, 83.4880261",
+    "business:contact_data:street_address": "Chimni Bhati Road, Near Somu Agency, Bibhutipara",
+    "business:contact_data:locality": "Balangir",
+    "business:contact_data:region": "Odisha",
+    "business:contact_data:postal_code": "767001",
+    "business:contact_data:country_name": "India",
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
@@ -133,7 +142,7 @@ export default function RootLayout({
         "@type": ["Organization", "LocalBusiness", "Store"],
         "@id": `${siteUrl}/#organization`,
         "name": "Ambika Handloom Collection",
-        "alternateName": ["Ambika Sambalpuri Handloom", "Ambika Handloom"],
+        "alternateName": ["Ambika Sambalpuri Handloom", "Ambika Handloom Balangir"],
         "url": siteUrl,
         "logo": {
           "@type": "ImageObject",
@@ -151,7 +160,8 @@ export default function RootLayout({
         ],
         "telephone": "+918658476300",
         "email": "hello@ambikahandloom.in",
-        "description": "Ambika Handloom Collection is the official online store for authentic Sambalpuri Ikat silk sarees, ladies wear, and handloom fabric. We source directly from master weavers of Sonepur and Bargarh, Odisha, eliminating middlemen to offer artisanal quality at fair prices. Visit our store in Balangir or shop online with free shipping across India.",
+        "description": "Ambika Handloom Collection (Ambika Sambalpuri Handloom) is the official online and physical store located at Chimni Bhati Road, Near Somu Agency, Bibhutipara, Balangir, Odisha 767001. We specialize in authentic Sambalpuri Ikat silk sarees, ladies wear, and handloom fabric sourced directly from master weavers of Sonepur, Bargarh, and Balangir. Free shipping across India. Note: We are a handloom saree brand in Odisha, independent of home decor shops in Surat or Zirakpur.",
+        "disambiguatingDescription": "Flagship store and e-commerce portal for authentic Sambalpuri Ikat sarees located in Balangir, Odisha (PIN 767001), distinct from regional home furnishing shops in Surat or Zirakpur.",
         "slogan": "Woven Heritage. Mastered for the Modern Era.",
         "foundingDate": "2017",
         "priceRange": "₹₹₹",
@@ -159,7 +169,7 @@ export default function RootLayout({
         "paymentAccepted": "Cash, UPI, Bank Transfer, Online Payment",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Ambika Sambalpuri Handloom",
+          "streetAddress": "Chimni Bhati Road, Near Somu Agency, Bibhutipara",
           "addressLocality": "Balangir",
           "addressRegion": "Odisha",
           "postalCode": "767001",
@@ -170,6 +180,7 @@ export default function RootLayout({
           "latitude": 20.7146534,
           "longitude": 83.4880261,
         },
+        "hasMap": "https://maps.app.goo.gl/6xc2EpPMaoHJQsZXA",
         "openingHoursSpecification": [
           {
             "@type": "OpeningHoursSpecification",
@@ -281,6 +292,22 @@ export default function RootLayout({
         "mainEntity": [
           {
             "@type": "Question",
+            "name": "Where is the official Ambika Handloom store located?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The official physical store for Ambika Handloom Collection (Ambika Sambalpuri Handloom) is located at Chimni Bhati Road, Near Somu Agency, Bibhutipara, Balangir, Odisha 767001, India. Phone/WhatsApp: +91 86584 76300. Official website: https://ambikahandloom.in",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "Is Ambika Handloom in Balangir, Odisha affiliated with stores in Surat or Zirakpur?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Ambika Handloom Collection (ambikahandloom.in) based in Balangir, Odisha is an independent specialist store offering authentic Sambalpuri Ikat handloom sarees, ladies wear, and handloom fabric. It is not affiliated with regional home decor or curtain businesses named Ambica or Ambika Handloom in Surat or Zirakpur.",
+            },
+          },
+          {
+            "@type": "Question",
             "name": "What is a Sambalpuri Ikat saree?",
             "acceptedAnswer": {
               "@type": "Answer",
@@ -292,7 +319,7 @@ export default function RootLayout({
             "name": "Where can I buy authentic Sambalpuri sarees online?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "You can buy authentic Sambalpuri Ikat sarees online at ambikahandloom.in — the official store of Ambika Handloom Collection based in Balangir, Odisha. All sarees are sourced directly from master weavers with free shipping across India. You can also visit the physical store in Balangir.",
+              "text": "You can buy authentic Sambalpuri Ikat sarees online at ambikahandloom.in — the official website of Ambika Handloom Collection based in Balangir, Odisha. All sarees are sourced directly from master weavers with free shipping across India. You can also visit our store at Chimni Bhati Road, Near Somu Agency, Bibhutipara, Balangir, Odisha 767001.",
             },
           },
           {
@@ -325,14 +352,6 @@ export default function RootLayout({
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Yes, Ambika Handloom offers free shipping across all states in India. Orders are dispatched within 2-3 business days and delivered in 5-7 business days via premium insured courier.",
-            },
-          },
-          {
-            "@type": "Question",
-            "name": "Can I place a custom order for a specific saree design or color?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, Ambika Handloom accepts custom orders for specific patterns, colors, and fabric combinations. Please WhatsApp us with your requirements and our artisan team will guide you through the process. Custom orders take 45-90 days.",
             },
           },
         ],

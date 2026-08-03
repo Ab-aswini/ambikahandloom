@@ -329,7 +329,11 @@ export default function AboutPage() {
                   <MapPin size={18} className="text-indigo-deep flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Ambika Sambalpuri Handloom</p>
-                    <p className="text-sm text-obsidian/50">Balangir, Odisha, India — 767001</p>
+                    <p className="text-sm text-obsidian/60 leading-normal">
+                      Chimni Bhati Road, Near Somu Agency, Bibhutipara
+                      <br />
+                      Balangir, Odisha, India — 767001
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
