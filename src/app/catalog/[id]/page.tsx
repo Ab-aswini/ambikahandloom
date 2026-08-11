@@ -15,6 +15,8 @@ export async function generateStaticParams() {
   return products.map((p) => ({ id: p.id }));
 }
 
+import { isSupabaseConfigured } from "@/lib/supabase";
+
 /** Look up a product: try static array first, then Supabase */
 async function findProduct(id: string): Promise<Product | null> {
   // 1. Check static products first (fastest — SSG)
@@ -22,9 +24,8 @@ async function findProduct(id: string): Promise<Product | null> {
   if (staticProduct) return staticProduct;
 
   // 2. Try Supabase for admin-added products
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (supabase && url && url !== "https://your-project-id.supabase.co") {
-    const { data, error } = await supabase
+  if (isSupabaseConfigured()) {
+    const { data, error } = await supabase!
       .from("products")
       .select("*")
       .eq("id", id)

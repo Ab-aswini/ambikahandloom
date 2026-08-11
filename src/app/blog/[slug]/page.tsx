@@ -18,12 +18,13 @@ export async function generateStaticParams() {
   ];
 }
 
+import { isSupabaseConfigured } from "@/lib/supabase";
+
 async function findBlogPost(slug: string): Promise<BlogPost | null> {
   // 1. Try Supabase first for real database blog posts
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (supabase && url && url !== "https://your-project-id.supabase.co") {
+  if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from("blog_posts")
         .select("*")
         .eq("slug", slug)

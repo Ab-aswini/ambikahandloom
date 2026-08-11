@@ -12,7 +12,7 @@
  * in-memory cache that is populated on first async load.
  */
 
-import { supabase } from "./supabase";
+import { supabase, hasValidCredentials } from "./supabase";
 import { Product, products as defaultProducts } from "@/lib/products";
 import { SEED_BLOG_POSTS } from "@/lib/blog-seeds";
 
@@ -21,8 +21,7 @@ export type { Product };
 
 // ─── Detect if Supabase is configured ──────────────────────
 export function isSupabaseConfigured(): boolean {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  return Boolean(supabase && url && url !== "https://your-project-id.supabase.co");
+  return Boolean(supabase && hasValidCredentials());
 }
 
 // ─── Order Types ────────────────────────────────────────────
@@ -1400,7 +1399,7 @@ export async function saveQuizResult(result: QuizResult): Promise<void> {
   // Try Supabase first
   if (isSupabaseConfigured()) {
     try {
-      await supabase!.from("quiz_results").insert({
+      const { error } = await supabase!.from("quiz_results").insert({
         id,
         occasion: result.occasion,
         fabric: result.fabric,
@@ -1410,8 +1409,11 @@ export async function saveQuizResult(result: QuizResult): Promise<void> {
         customer_name: result.customerName || null,
         customer_phone: result.customerPhone || null,
       });
+      if (error) {
+        console.error("Quiz result Supabase save error:", error.message, error.details, error.hint);
+      }
     } catch (err) {
-      console.error("Quiz result Supabase save error:", err);
+      console.error("Quiz result Supabase network error:", err);
     }
   }
 

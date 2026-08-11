@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { products as staticProducts, sections } from "@/lib/products";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 // Blog posts seed data (imported statically for SSR sitemap generation)
 // These are the same slugs as the seed posts in admin-store.ts
@@ -62,10 +62,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let blogPages: MetadataRoute.Sitemap = [];
 
   // Try Supabase blog_posts first
-  const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (supabase && sbUrl && sbUrl !== "https://your-project-id.supabase.co") {
+  if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from("blog_posts")
         .select("slug, updated_at")
         .eq("published", true);
@@ -78,7 +77,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }));
       }
     } catch (err) {
-      console.error("Sitemap blog Supabase fetch error:", err);
+      console.error("Sitemap blog_posts Supabase fetch error:", err);
     }
   }
 
@@ -94,9 +93,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fetch products: try Supabase first, fall back to static array
   let allProducts = staticProducts;
-  if (supabase && sbUrl && sbUrl !== "https://your-project-id.supabase.co") {
+  if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from("products")
         .select("id, image, images, updated_at")
         .order("sort_order", { ascending: true });

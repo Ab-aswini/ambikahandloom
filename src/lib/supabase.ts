@@ -1,7 +1,10 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+export const DEFAULT_SUPABASE_URL = "https://mouqetmwwxcazgwodkzd.supabase.co";
+export const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vdXFldG13d3hjYXpnd29ka3pkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwMzE1ODUsImV4cCI6MjA5OTYwNzU4NX0.L7ysOX8zOCdFREQGJt6b00aREH8np0B3uGZBSs74e8Q";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
 // Placeholder values that ship with the template — NOT real credentials
 const PLACEHOLDER_VALUES = [
@@ -11,7 +14,7 @@ const PLACEHOLDER_VALUES = [
 ];
 
 /** True only when REAL Supabase credentials are configured */
-function hasValidCredentials(): boolean {
+export function hasValidCredentials(): boolean {
   if (!supabaseUrl || !supabaseAnonKey) return false;
   if (PLACEHOLDER_VALUES.includes(supabaseUrl)) return false;
   if (PLACEHOLDER_VALUES.includes(supabaseAnonKey)) return false;
@@ -20,20 +23,11 @@ function hasValidCredentials(): boolean {
   return true;
 }
 
-// Lazy singleton — only created when REAL credentials are available.
-let _client: SupabaseClient | null = null;
-
-function getClient(): SupabaseClient | null {
-  if (_client) return _client;
-  if (!hasValidCredentials()) return null;
-  _client = createClient(supabaseUrl, supabaseAnonKey);
-  return _client;
+export function isSupabaseConfigured(): boolean {
+  return hasValidCredentials();
 }
 
-/**
- * Shared Supabase client for browser-side usage.
- * Returns `null` when env vars are not configured or are placeholders.
- */
+// Shared Supabase client for browser-side usage.
 export const supabase: SupabaseClient | null = hasValidCredentials()
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
@@ -41,18 +35,23 @@ export const supabase: SupabaseClient | null = hasValidCredentials()
 /**
  * Lazy getter — safe alternative that always returns the latest client.
  */
-export { getClient };
+export function getClient(): SupabaseClient | null {
+  return supabase;
+}
 
 // Server-side admin client (service role, never expose to browser)
 export function getAdminClient() {
-  const serviceKey = process.env.SUPABASE_SERVICE_KEY;
+  const serviceKey =
+    process.env.SUPABASE_SERVICE_KEY ||
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vdXFldG13d3hjYXpnd29ka3pkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDAzMTU4NSwiZXhwIjoyMDk5NjA3NTg1fQ.EYzCot-1zf7phG7ZEUlzI5t8OH3PW057LcY-VDE9ehw";
+
   if (
     !serviceKey ||
     !supabaseUrl ||
     PLACEHOLDER_VALUES.includes(serviceKey) ||
     PLACEHOLDER_VALUES.includes(supabaseUrl)
   ) {
-    throw new Error("SUPABASE_SERVICE_KEY or SUPABASE_URL is not set (or still has placeholder values)");
+    throw new Error("SUPABASE_SERVICE_KEY or SUPABASE_URL is not set");
   }
   return createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false },
