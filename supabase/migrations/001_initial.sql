@@ -414,3 +414,18 @@ VALUES
    '2026-02-20T10:00:00Z',
    '2026-02-20T10:00:00Z')
 ON CONFLICT (id) DO NOTHING;
+
+-- ─── Quiz Results Table (Weave Explorer) ─────────
+CREATE TABLE IF NOT EXISTS quiz_results (
+  id TEXT PRIMARY KEY,                           -- e.g. "QZ-M1A2B3-XY4Z"
+  occasion TEXT NOT NULL,                        -- "Wedding & Grand Celebrations"
+  fabric TEXT NOT NULL,                          -- "Pure Mulberry Silk"
+  budget TEXT NOT NULL,                          -- "₹5,000 – ₹15,000"
+  matched_product_ids TEXT[] DEFAULT '{}',       -- ["AH-001", "AH-003"]
+  completed_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE quiz_results ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can insert quiz_results" ON quiz_results FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admins can read quiz_results" ON quiz_results FOR SELECT USING (true);

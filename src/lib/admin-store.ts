@@ -1376,3 +1376,78 @@ export function getNewsletterSubscribers(): NewsletterSubscriber[] {
   const raw = localStorage.getItem(LS_NEWSLETTER_KEY);
   return raw ? JSON.parse(raw) : [];
 }
+
+// ─── Quiz Results (Weave Explorer) ──────────────────────────
+
+const LS_QUIZ_KEY = "ah-quiz-results";
+
+export interface QuizResult {
+  id?: string;
+  occasion: string;
+  fabric: string;
+  budget: string;
+  matchedProductIds: string[];
+  completedAt: string;
+}
+
+/** Save a quiz result to Supabase + localStorage. */
+export async function saveQuizResult(result: QuizResult): Promise<void> {
+  const id = `QZ-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+  const fullResult = { ...result, id };
+
+  // Try Supabase first
+  if (isSupabaseConfigured()) {
+    try {
+      await supabase!.from("quiz_results").insert({
+        id,
+        occasion: result.occasion,
+        fabric: result.fabric,
+        budget: result.budget,
+        matched_product_ids: result.matchedProductIds,
+        completed_at: result.completedAt,
+      });
+    } catch (err) {
+      console.error("Quiz result Supabase save error:", err);
+    }
+  }
+
+  // Always save to localStorage too
+  const raw = localStorage.getItem(LS_QUIZ_KEY);
+  const existing: QuizResult[] = raw ? JSON.parse(raw) : [];
+  existing.unshift(fullResult);
+  // Keep only last 100 results in localStorage
+  localStorage.setItem(LS_QUIZ_KEY, JSON.stringify(existing.slice(0, 100)));
+}
+
+/** Get all quiz results (for admin panel). */
+export function getQuizResults(): QuizResult[] {
+  if (typeof window === "undefined") return [];
+  const raw = localStorage.getItem(LS_QUIZ_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+/** Get quiz results from Supabase (async). */
+export async function getQuizResultsAsync(): Promise<QuizResult[]> {
+  if (isSupabaseConfigured()) {
+    try {
+      const { data, error } = await supabase!
+        .from("quiz_results")
+        .select("*")
+        .order("completed_at", { ascending: false })
+        .limit(200);
+      if (!error && data && data.length > 0) {
+        return data.map((row: { id: string; occasion: string; fabric: string; budget: string; matched_product_ids: string[]; completed_at: string }) => ({
+          id: row.id,
+          occasion: row.occasion,
+          fabric: row.fabric,
+          budget: row.budget,
+          matchedProductIds: row.matched_product_ids || [],
+          completedAt: row.completed_at,
+        }));
+      }
+    } catch (err) {
+      console.error("Quiz results Supabase fetch error:", err);
+    }
+  }
+  return getQuizResults();
+}

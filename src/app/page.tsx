@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Shield, Truck, Gem, Sparkles } from "lucide-react";
+import { ArrowRight, Shield, Truck, Gem, Sparkles, Compass } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/lib/products";
 import { getSettings, getProducts, getProductsAsync, SiteSettings } from "@/lib/admin-store";
@@ -257,6 +257,99 @@ export default function HomePage() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== WEAVE EXPLORER TEASER ===== */}
+      <section className="py-20 md:py-28 bg-gradient-to-b from-cream to-warm-100/40">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center max-w-3xl mx-auto mb-14"
+          >
+            <div className="inline-flex items-center gap-2 text-indigo-deep text-xs tracking-[0.2em] uppercase font-medium mb-4">
+              <Compass size={14} />
+              Interactive Weave Explorer
+            </div>
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[0.95] mb-4">
+              Find Your
+              <br />
+              <span className="text-indigo-deep">Perfect Weave</span>
+            </h2>
+            <p className="text-sm md:text-base text-obsidian/50 leading-relaxed">
+              Not sure where to start? Answer 3 quick questions and we&apos;ll match
+              you with the authentic Sambalpuri masterpiece that&apos;s perfect for you.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+            {[
+              {
+                emoji: "🎉",
+                title: "Wedding & Grand Celebrations",
+                desc: "Exclusive silk masterpieces",
+                image: "/images/saree-hero-1.png",
+              },
+              {
+                emoji: "🪔",
+                title: "Festival & Puja",
+                desc: "Traditional Ikat elegance",
+                image: "/images/saree-product-4.png",
+              },
+              {
+                emoji: "👔",
+                title: "Daily Elegance",
+                desc: "Kurtas, dupattas & more",
+                image: "/images/kurta-indigo-bloom.png",
+              },
+              {
+                emoji: "✂️",
+                title: "Custom Stitching",
+                desc: "Premium Ikat fabric by the meter",
+                image: "/images/silk-cutpiece-indigo.png",
+              },
+            ].map((card, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="group relative overflow-hidden rounded-2xl border border-warm-200 bg-cream hover:shadow-lg hover:border-indigo-deep/30 transition-all duration-500"
+              >
+                <div className="relative h-32 overflow-hidden">
+                  <Image
+                    src={card.image}
+                    alt={card.title}
+                    fill
+                    className="object-cover opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-700"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-cream via-cream/80 to-transparent" />
+                </div>
+                <div className="absolute inset-0 flex flex-col justify-end p-5">
+                  <span className="text-2xl mb-1">{card.emoji}</span>
+                  <span className="font-serif text-base tracking-tight group-hover:text-indigo-deep transition-colors">
+                    {card.title}
+                  </span>
+                  <span className="text-xs text-obsidian/40">{card.desc}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link
+              href="/discover"
+              className="magnetic-btn inline-flex items-center gap-3 bg-obsidian text-cream px-8 py-4 text-xs tracking-[0.15em] uppercase font-medium hover:bg-indigo-deep transition-colors duration-500"
+            >
+              Start the Quiz
+              <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </section>

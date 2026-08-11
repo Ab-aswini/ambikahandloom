@@ -42,7 +42,11 @@ By-the-meter authentic handloom materials:
 - [Catalog](https://ambikahandloom.in/catalog) — Browse sarees, ladies wear, and cut pieces
 - [About Us](https://ambikahandloom.in/about) — Our story, mission, and artisan heritage
 - [Blog](https://ambikahandloom.in/blog) — Guides, heritage stories, and handloom education
+- [Find Your Perfect Weave](https://ambikahandloom.in/discover) — Interactive quiz to match customers with the ideal Sambalpuri product
 - [Track Order](https://ambikahandloom.in/track) — Live delivery tracking
+
+## Interactive Weave Explorer
+Ambika Handloom offers an interactive "Find Your Perfect Weave" quiz at https://ambikahandloom.in/discover. Customers answer 3 questions — occasion, fabric preference, and budget — and receive personalized product recommendations from the catalog. Results include direct WhatsApp inquiry links and product detail pages.
 
 ## Why Buy From Us
 - **Direct from Artisans** — No middlemen. Fair pricing for weavers and customers
