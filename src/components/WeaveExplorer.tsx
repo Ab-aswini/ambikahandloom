@@ -13,6 +13,9 @@ import {
   ShoppingBag,
   ExternalLink,
   Check,
+  User,
+  Phone,
+  Send,
 } from "lucide-react";
 import { Product } from "@/lib/products";
 import { getProducts, getProductsAsync, saveQuizResult } from "@/lib/admin-store";
@@ -119,6 +122,10 @@ export default function WeaveExplorer({ fullPage = false }: WeaveExplorerProps) 
   const [results, setResults] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>(getProducts);
   const [resultsSaved, setResultsSaved] = useState(false);
+  const [contactName, setContactName] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactSaved, setContactSaved] = useState(false);
+  const [contactSaving, setContactSaving] = useState(false);
 
   useEffect(() => {
     getProductsAsync()
@@ -215,6 +222,8 @@ export default function WeaveExplorer({ fullPage = false }: WeaveExplorerProps) 
       budget: budgetLabel,
       matchedProductIds: (matched.length > 0 ? matched : []).map((p) => p.id).slice(0, 4),
       completedAt: new Date().toISOString(),
+      customerName: "",
+      customerPhone: "",
     })
       .then(() => setResultsSaved(true))
       .catch(console.error);
@@ -227,6 +236,33 @@ export default function WeaveExplorer({ fullPage = false }: WeaveExplorerProps) 
     setBudget(null);
     setResults([]);
     setResultsSaved(false);
+    setContactName("");
+    setContactPhone("");
+    setContactSaved(false);
+  };
+
+  const handleContactSubmit = async () => {
+    if (!contactName.trim() || !contactPhone.trim()) return;
+    setContactSaving(true);
+    try {
+      const occasionLabel = OCCASIONS.find((o) => o.id === occasion)?.label || "";
+      const fabricLabel = FABRICS.find((f) => f.id === fabric)?.label || "";
+      const budgetLabel = BUDGETS.find((b) => b.id === budget)?.label || "";
+      await saveQuizResult({
+        occasion: occasionLabel,
+        fabric: fabricLabel,
+        budget: budgetLabel,
+        matchedProductIds: results.map((p) => p.id),
+        completedAt: new Date().toISOString(),
+        customerName: contactName.trim(),
+        customerPhone: contactPhone.trim(),
+      });
+      setContactSaved(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setContactSaving(false);
+    }
   };
 
   const handleWhatsApp = (product: Product) => {
@@ -515,6 +551,77 @@ export default function WeaveExplorer({ fullPage = false }: WeaveExplorerProps) 
                 </motion.div>
               ))}
             </div>
+
+            {/* Contact Capture Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="rounded-2xl border border-indigo-deep/15 bg-indigo-deep/5 p-6 mb-8"
+            >
+              {!contactSaved ? (
+                <>
+                  <h4 className="font-serif text-lg tracking-tight mb-1">
+                    Want us to reach out to you?
+                  </h4>
+                  <p className="text-xs text-obsidian/50 mb-4">
+                    Share your details and our team will contact you with personalized recommendations.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-obsidian/30" />
+                      <input
+                        type="text"
+                        placeholder="Your Name"
+                        value={contactName}
+                        onChange={(e) => setContactName(e.target.value)}
+                        className="w-full pl-9 pr-4 py-3 text-sm rounded-xl border border-warm-200 bg-cream focus:border-indigo-deep focus:outline-none transition-colors"
+                      />
+                    </div>
+                    <div className="relative flex-1">
+                      <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-obsidian/30" />
+                      <input
+                        type="tel"
+                        placeholder="Phone Number"
+                        value={contactPhone}
+                        onChange={(e) => setContactPhone(e.target.value)}
+                        className="w-full pl-9 pr-4 py-3 text-sm rounded-xl border border-warm-200 bg-cream focus:border-indigo-deep focus:outline-none transition-colors"
+                      />
+                    </div>
+                    <button
+                      onClick={handleContactSubmit}
+                      disabled={!contactName.trim() || !contactPhone.trim() || contactSaving}
+                      className="inline-flex items-center justify-center gap-2 bg-indigo-deep text-cream text-xs tracking-[0.1em] uppercase font-medium px-6 py-3 rounded-xl hover:bg-obsidian transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {contactSaving ? (
+                        <span className="animate-pulse">Saving...</span>
+                      ) : (
+                        <>
+                          <Send size={13} /> Get a Callback
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-obsidian/30 mt-2">
+                    We respect your privacy. Your details are only used to assist you.
+                  </p>
+                </>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-deep/10 flex items-center justify-center">
+                    <Check size={18} className="text-indigo-deep" />
+                  </div>
+                  <div>
+                    <p className="font-serif text-lg tracking-tight">
+                      Thank you, {contactName}! 🙏
+                    </p>
+                    <p className="text-xs text-obsidian/50">
+                      Our team will contact you shortly on {contactPhone}.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </motion.div>
 
             {/* Summary chips */}
             <div className="flex flex-wrap gap-2 pt-4 border-t border-warm-200">

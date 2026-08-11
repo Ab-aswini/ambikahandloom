@@ -1388,6 +1388,8 @@ export interface QuizResult {
   budget: string;
   matchedProductIds: string[];
   completedAt: string;
+  customerName?: string;
+  customerPhone?: string;
 }
 
 /** Save a quiz result to Supabase + localStorage. */
@@ -1405,6 +1407,8 @@ export async function saveQuizResult(result: QuizResult): Promise<void> {
         budget: result.budget,
         matched_product_ids: result.matchedProductIds,
         completed_at: result.completedAt,
+        customer_name: result.customerName || null,
+        customer_phone: result.customerPhone || null,
       });
     } catch (err) {
       console.error("Quiz result Supabase save error:", err);
