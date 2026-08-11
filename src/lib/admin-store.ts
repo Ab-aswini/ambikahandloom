@@ -1396,7 +1396,21 @@ export async function saveQuizResult(result: QuizResult): Promise<void> {
   const id = `QZ-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
   const fullResult = { ...result, id };
 
-  // Try Supabase first
+  // 1. Send to server API route first (most reliable)
+  try {
+    const res = await fetch("/api/quiz", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(result),
+    });
+    if (!res.ok) {
+      console.warn("Quiz API route returned non-OK status:", res.status);
+    }
+  } catch (apiErr) {
+    console.error("Quiz result API route error:", apiErr);
+  }
+
+  // 2. Backup client-side Supabase insert
   if (isSupabaseConfigured()) {
     try {
       const { error } = await supabase!.from("quiz_results").insert({
@@ -1410,19 +1424,20 @@ export async function saveQuizResult(result: QuizResult): Promise<void> {
         customer_phone: result.customerPhone || null,
       });
       if (error) {
-        console.error("Quiz result Supabase save error:", error.message, error.details, error.hint);
+        console.error("Quiz result Supabase save error:", error.message);
       }
     } catch (err) {
       console.error("Quiz result Supabase network error:", err);
     }
   }
 
-  // Always save to localStorage too
-  const raw = localStorage.getItem(LS_QUIZ_KEY);
-  const existing: QuizResult[] = raw ? JSON.parse(raw) : [];
-  existing.unshift(fullResult);
-  // Keep only last 100 results in localStorage
-  localStorage.setItem(LS_QUIZ_KEY, JSON.stringify(existing.slice(0, 100)));
+  // 3. Always save to localStorage too
+  if (typeof window !== "undefined") {
+    const raw = localStorage.getItem(LS_QUIZ_KEY);
+    const existing: QuizResult[] = raw ? JSON.parse(raw) : [];
+    existing.unshift(fullResult);
+    localStorage.setItem(LS_QUIZ_KEY, JSON.stringify(existing.slice(0, 100)));
+  }
 }
 
 /** Get all quiz results (for admin panel). */
@@ -1434,6 +1449,29 @@ export function getQuizResults(): QuizResult[] {
 
 /** Get quiz results from Supabase (async). */
 export async function getQuizResultsAsync(): Promise<QuizResult[]> {
+  // 1. Try server API route first
+  try {
+    const res = await fetch("/api/quiz");
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        return json.data.map((row: { id: string; occasion: string; fabric: string; budget: string; matched_product_ids: string[]; completed_at: string; customer_name?: string; customer_phone?: string }) => ({
+          id: row.id,
+          occasion: row.occasion,
+          fabric: row.fabric,
+          budget: row.budget,
+          matchedProductIds: row.matched_product_ids || [],
+          completedAt: row.completed_at,
+          customerName: row.customer_name || undefined,
+          customerPhone: row.customer_phone || undefined,
+        }));
+      }
+    }
+  } catch (apiErr) {
+    console.error("Quiz results API fetch error:", apiErr);
+  }
+
+  // 2. Direct Supabase fallback
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase!
