@@ -109,3 +109,26 @@ Ambika Handloom works directly with the local weaving communities of **Sonepur (
 - **Kosa Silk**: A rare type of forest silk harvested from Antheraea mylitta silkworms, highly prized for its durability and distinct golden tint.
 - **Pasapali Design**: The chess-board pattern, inspired by the dice game in Mahabharata, representing harmony and dynamic precision.
 - **Temple Border**: A triangular pattern woven along the selvedge, representing the towering spires of ancient Odishan temples.
+
+---
+
+## Interactive Weave Explorer
+Ambika Handloom offers an interactive **"Find Your Perfect Weave"** quiz at https://ambikahandloom.in/discover. Customers answer 3 quick questions — occasion, fabric preference, and budget — and receive personalized product recommendations from the catalog. Results include:
+- Direct WhatsApp inquiry links with pre-filled product details
+- Product detail page links
+- Optional callback request (name + phone)
+- **Amazon store link** (coming soon)
+
+### How It Works
+1. **Occasion Selection**: Wedding, Festival, Daily Elegance, or Custom Stitching
+2. **Fabric Preference**: Pure Silk, Pure Cotton, or Both
+3. **Budget Range**: Under ₹5,000, ₹5,000–₹15,000, or ₹15,000+
+4. **Result**: 2–4 matched products from the real catalog with buy/enquiry options
+
+### Navigation Links
+- [Home Page](https://ambikahandloom.in/) — Main landing page
+- [Catalog](https://ambikahandloom.in/catalog) — Browse all products
+- [About Us](https://ambikahandloom.in/about) — Heritage story
+- [Blog](https://ambikahandloom.in/blog) — Guides & education
+- [Find Your Perfect Weave](https://ambikahandloom.in/discover) — Interactive quiz
+- [Track Order](https://ambikahandloom.in/track) — Delivery tracking

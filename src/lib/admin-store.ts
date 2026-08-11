@@ -1440,13 +1440,15 @@ export async function getQuizResultsAsync(): Promise<QuizResult[]> {
         .order("completed_at", { ascending: false })
         .limit(200);
       if (!error && data && data.length > 0) {
-        return data.map((row: { id: string; occasion: string; fabric: string; budget: string; matched_product_ids: string[]; completed_at: string }) => ({
+        return data.map((row: { id: string; occasion: string; fabric: string; budget: string; matched_product_ids: string[]; completed_at: string; customer_name?: string; customer_phone?: string }) => ({
           id: row.id,
           occasion: row.occasion,
           fabric: row.fabric,
           budget: row.budget,
           matchedProductIds: row.matched_product_ids || [],
           completedAt: row.completed_at,
+          customerName: row.customer_name || undefined,
+          customerPhone: row.customer_phone || undefined,
         }));
       }
     } catch (err) {

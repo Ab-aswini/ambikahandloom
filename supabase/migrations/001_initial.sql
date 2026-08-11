@@ -422,6 +422,8 @@ CREATE TABLE IF NOT EXISTS quiz_results (
   fabric TEXT NOT NULL,                          -- "Pure Mulberry Silk"
   budget TEXT NOT NULL,                          -- "₹5,000 – ₹15,000"
   matched_product_ids TEXT[] DEFAULT '{}',       -- ["AH-001", "AH-003"]
+  customer_name TEXT,                            -- optional: visitor name for callback
+  customer_phone TEXT,                           -- optional: visitor phone for callback
   completed_at TIMESTAMPTZ DEFAULT NOW(),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
